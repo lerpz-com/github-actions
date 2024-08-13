@@ -1,0 +1,8 @@
+name: Rust project linter and tester
+
+on:
+  workflow_call:
+
+jobs:
+  lint-and-test:
+    
