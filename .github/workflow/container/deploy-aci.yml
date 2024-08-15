@@ -1,0 +1,18 @@
+name: Deploy container to Azure Container Instances
+
+on:
+  workflow_call:
+    inputs:
+      DEPLOY_ENV:
+        description: The environment to deploy to
+        required: true
+        type: string
+
+      IMAGE_NAME:
+        description: The name of the image to deploy
+        required: true
+        type: string
+
+jobs:
+  deploy-container:
+    runs-on: ubuntu-latest

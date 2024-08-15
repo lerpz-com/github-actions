@@ -13,9 +13,10 @@ This workflow will lint and test the project. Then it builds a container and dep
 title: rust-pipeline.yml
 ---
 flowchart LR
-    prepare-pipeline --> lint-and-test
-    lint-and-test --> container-build
-    container-build --> container-deploy
-    lint-and-test --> terraform-plan
-    terraform-plan --> terraform-apply
+    A[prepare-pipeline] --> B[lint-and-test]
+    B --> C[container/build-and-push]
+    B --> E[terraform/plan]
+    C --> D[container/deploy-aci]
+    E --> F[terraform/apply]
+    F --> D
 ```

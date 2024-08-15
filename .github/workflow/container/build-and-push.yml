@@ -3,15 +3,10 @@ name: Build and push docker image
 on:
   workflow_call:
     inputs:
-      DEPLOY_ENV: 
-        description: 'The environment to deploy to'
+      DEPLOY_ENV:
+        description: The environment to deploy to
         required: true
         type: string
-
-      RUST_TOOLCHAIN:
-        description: The Rust toolchain to use
-        required: true
-        type: string 
 
       IMAGE_NAME:
         description: The name of the image to build
@@ -28,7 +23,7 @@ env:
 
 jobs:
   build-and-push-image:
-    if: inputs.DEPLOY_ENV == 'PROD'
+    if: inputs.DEPLOY_ENV == 'prod' or inputs.DEPLOY_ENV == 'stag'
     runs-on: ubuntu-latest
 
     environment: ${{ inputs.DEPLOY_ENV }}
@@ -53,7 +48,7 @@ jobs:
           registry: ${{ env.DOCKER_REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      
+
       - name: Docker meta-data
         id: docker-meta
         uses: docker/metadata-action@v5
@@ -71,7 +66,7 @@ jobs:
           labels: ${{ steps.docker-meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
-      
+
       - name: Write summary
         run: |
           echo "### 🐳 Docker build: 
