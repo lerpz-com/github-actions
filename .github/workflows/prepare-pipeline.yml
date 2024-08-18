@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
 
     outputs:
-      DEPLOY_ENV: ${{ steps.deploy-environment.outputs.DEPLOY_ENV }}
+      DEPLOY_ENV: ${{ steps.deploy-env.outputs.DEPLOY_ENV }}
       IMAGE_NAME: ${{ steps.image-name.outputs.IMAGE_NAME }}
 
     steps:
@@ -29,27 +29,27 @@ jobs:
           DEPLOY_PLATFORM: ${{ github.event.inputs.DEPLOY_PLATFORM }}
         run: |
           if [[ -z $DEPLOY_PLATFORM ]]; then
-              DEPLOY_PLATFORM="Not given"
+              DEPLOY_PLATFORM="Not specified"
           fi
 
           echo "DEPLOY_PLATFORM="$DEPLOY_PLATFORM
-          echo "DEPLOY_ENV=$DEPLOY_PLATFORM" >> $GITHUB_OUTPUT
+          echo "DEPLOY_PLATFORM=$DEPLOY_PLATFORM" >> $GITHUB_OUTPUT
 
       - name: Set deployment environment variable
-        id: deploy-environment
+        id: deploy-env
         env:
           BRANCH: ${{ github.ref_name }}
         run: |
           if [[ $BRANCH == "main" || $BRANCH == "master" ]]; then
-              DEPLOY_ENVIRONMENT=prod
+              DEPLOY_ENV=prod
           elif [[ $BRANCH == "staging" ]]; then
-              DEPLOY_ENVIRONMENT=stag
+              DEPLOY_ENV=stag
           else
-              DEPLOY_ENVIRONMENT=dev
+              DEPLOY_ENV=dev
           fi
 
-          echo "DEPLOY_ENVIRONMENT="$DEPLOY_ENVIRONMENT
-          echo "DEPLOY_ENVIRONMENT=$DEPLOY_ENVIRONMENT" >> $GITHUB_OUTPUT
+          echo "DEPLOY_ENV="$DEPLOY_ENV
+          echo "DEPLOY_ENV=$DEPLOY_ENV" >> $GITHUB_OUTPUT
 
       - name: Set docker image name
         id: image-name
@@ -66,7 +66,7 @@ jobs:
           <table>
             <tr>
               <td>🎯 Deployment environment</td>
-              <td>${{ steps.deploy-environment.outputs.DEPLOY_ENVIRONMENT }}</td>
+              <td>${{ steps.deploy-environment.outputs.DEPLOY_ENV }}</td>
             </tr>
             <tr>
               <td>🚀 Deployment platform</td>
@@ -80,8 +80,8 @@ jobs:
 
   prepare-azure:
     if: |
-      needs.prepare-variables.outputs.DEPLOY_ENVIRONMENT == 'prod' ||
-      needs.prepare-variables.outputs.DEPLOY_ENVIRONMENT == 'stag' &&
+      needs.prepare-variables.outputs.DEPLOY_ENV == 'prod' ||
+      needs.prepare-variables.outputs.DEPLOY_ENV == 'stag' &&
       vars.DEPLOY_PLATFORM == 'azure'
     runs-on: ubuntu-latest
 
