@@ -1,0 +1,23 @@
+name: Terraform pipeline to deploy infrastructure using terraform
+
+on:
+  workflow_call:
+
+jobs:
+  prepare-pipeline:
+    uses: ./.github/workflows/prepare-pipeline.yml
+    secrets: inherit
+
+  terraform-plan:
+    uses: ./.github/workflows/terraform/plan.yml
+    needs: [prepare-pipeline]
+    secrets: inherit
+    with:
+      DEPLOY_ENV: ${{ needs.prepare-pipeline.outputs.DEPLOY_ENV }}
+
+  terraform-apply:
+    uses: ./.github/workflows/terraform/apply.yml
+    needs: [terraform-plan]
+    secrets: inherit
+    with:
+      DEPLOY_ENV: ${{ needs.prepare-pipeline.outputs.DEPLOY_ENV }}
