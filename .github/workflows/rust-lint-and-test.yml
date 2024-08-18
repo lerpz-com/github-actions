@@ -1,0 +1,57 @@
+name: Rust project linter and tester
+
+on:
+  workflow_call:
+    inputs:
+      DEPLOY_ENV:
+        description: Environment to deploy to
+        required: true
+        type: string
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Rust environment
+        run: |
+          rustup update
+          rustup component add clippy
+
+      - name: Write toolchain info summary
+        run: |
+          echo "### Rust toolchain:
+          <table>
+            <tr>
+              <th>Component</th>
+              <th>Version</th>
+            </tr>
+            <tr>
+              <td>rustc</td>
+              <td>$(rustc --version)</td>
+            </tr>
+            <tr>
+              <td>cargo</td>
+              <td>$(cargo --version)</td>
+            </tr>
+            <tr>
+              <td>clippy</td>
+              <td>$(cargo clippy --version)</td>
+            </tr>
+          </table>" >> $GITHUB_STEP_SUMMARY
+
+      - name: Lint Rust code with Clippy
+        env:
+          DEPLOY_ENV: ${{ inputs.DEPLOY_ENV }}
+        run: |
+          if [[ $DEPLOY_ENV == "prod" ]]; then
+            cargo clippy --all-targets --all-features -- -D warnings
+          else
+            cargo clippy --all-targets --all-features
+          fi
+
+      - name: Test Rust code
+        run: cargo test

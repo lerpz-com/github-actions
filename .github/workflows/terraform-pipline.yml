@@ -9,15 +9,15 @@ jobs:
     secrets: inherit
 
   terraform-plan:
-    uses: ./.github/workflows/terraform/plan.yml
+    uses: ./.github/workflows/terraform-plan.yml
     needs: [prepare-pipeline]
     secrets: inherit
     with:
       DEPLOY_ENV: ${{ needs.prepare-pipeline.outputs.DEPLOY_ENV }}
 
   terraform-apply:
-    uses: ./.github/workflows/terraform/apply.yml
-    needs: [terraform-plan]
+    uses: ./.github/workflows/terraform-apply.yml
+    needs: [prepare-pipeline, terraform-plan]
     secrets: inherit
     with:
       DEPLOY_ENV: ${{ needs.prepare-pipeline.outputs.DEPLOY_ENV }}
