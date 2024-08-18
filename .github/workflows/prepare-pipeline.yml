@@ -18,7 +18,7 @@ on:
 jobs:
   prepare-azure:
     runs-on: ubuntu-latest
-    if: vars.DEPLOYMENT_PLATFORM == 'azure'
+    if: vars.DEPLOY_PLATFORM == 'azure'
     steps:
       - name: Validate log in to Azure using OIDC
         uses: azure/login@v1

@@ -14,19 +14,18 @@ jobs:
     secrets: inherit
     with:
       DEPLOY_ENV: ${{ needs.prepare-pipeline.outputs.DEPLOY_ENV }}
-      RUST_TOOLCHAIN: ${{ needs.prepare-pipeline.outputs.RUST_TOOLCHAIN }}
 
   build-and-push-image:
     uses: ./.github/workflows/container/build-and-push.yml
-    needs: [linter, tester]
+    needs: [prepare-pipeline, lint-and-test]
     secrets: inherit
     with:
       DEPLOY_ENV: ${{ needs.prepare-pipeline.outputs.DEPLOY_ENV }}
       IMAGE_NAME: ${{ needs.prepare-pipeline.outputs.IMAGE_NAME }}
 
   deploy-aci:
-    uses: ./.github/workflows/container/deploy.yml
-    needs: [build-and-push-image, terraform-apply]
+    uses: ./.github/workflows/container/deploy-aci.yml
+    needs: [prepare-pipeline, build-and-push-image, terraform-apply]
     secrets: inherit
     with:
       DEPLOY_ENV: ${{ needs.prepare-pipeline.outputs.DEPLOY_ENV }}
@@ -34,14 +33,14 @@ jobs:
 
   terraform-plan:
     uses: ./.github/workflows/terraform/plan.yml
-    needs: [build-and-push-image]
+    needs: [prepare-pipeline, build-and-push-image]
     secrets: inherit
     with:
       DEPLOY_ENV: ${{ needs.prepare-pipeline.outputs.DEPLOY_ENV }}
 
   terraform-apply:
     uses: ./.github/workflows/terraform/apply.yml
-    needs: [terraform-plan]
+    needs: [prepare-pipeline, terraform-plan]
     secrets: inherit
     with:
       DEPLOY_ENV: ${{ needs.prepare-pipeline.outputs.DEPLOY_ENV }}
