@@ -87,6 +87,8 @@ jobs:
 
     needs: prepare-variables
 
+    environment: ${{ needs.prepare-variables.outputs.DEPLOY_ENV }}
+
     permissions:
       id-token: write
       contents: read
