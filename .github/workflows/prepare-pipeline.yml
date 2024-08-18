@@ -34,7 +34,7 @@ jobs:
           inlineScript: |
             az account show
 
-  prepare-vriables:
+  prepare-variables:
     runs-on: ubuntu-latest
 
     outputs:
