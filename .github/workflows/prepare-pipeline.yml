@@ -32,21 +32,24 @@ jobs:
               DEPLOY_PLATFORM="Not given"
           fi
 
+          echo "DEPLOY_PLATFORM="$DEPLOY_PLATFORM
+          echo "DEPLOY_ENV=$DEPLOY_PLATFORM" >> $GITHUB_OUTPUT
+
       - name: Set deployment environment variable
         id: deploy-environment
         env:
           BRANCH: ${{ github.ref_name }}
         run: |
           if [[ $BRANCH == "main" || $BRANCH == "master" ]]; then
-              DEPLOY_ENV=prod
+              DEPLOY_ENVIRONMENT=prod
           elif [[ $BRANCH == "staging" ]]; then
-              DEPLOY_ENV=stag
+              DEPLOY_ENVIRONMENT=stag
           else
-              DEPLOY_ENV=dev
+              DEPLOY_ENVIRONMENT=dev
           fi
 
-          echo "DEPLOY_ENV="$DEPLOY_ENV
-          echo "DEPLOY_ENV=$DEPLOY_ENV" >> $GITHUB_OUTPUT
+          echo "DEPLOY_ENVIRONMENT="$DEPLOY_ENVIRONMENT
+          echo "DEPLOY_ENVIRONMENT=$DEPLOY_ENVIRONMENT" >> $GITHUB_OUTPUT
 
       - name: Set docker image name
         id: image-name
@@ -63,7 +66,7 @@ jobs:
           <table>
             <tr>
               <td>🎯 Deployment environment</td>
-              <td>${{ steps.deploy-environment.outputs.DEPLOY_ENV }}</td>
+              <td>${{ steps.deploy-environment.outputs.DEPLOY_ENVIRONMENT }}</td>
             </tr>
             <tr>
               <td>🚀 Deployment platform</td>
@@ -77,8 +80,8 @@ jobs:
 
   prepare-azure:
     if: |
-      needs.prepare-variables.outputs.DEPLOY_ENV == 'prod' ||
-      needs.prepare-variables.outputs.DEPLOY_ENV == 'stag' &&
+      needs.prepare-variables.outputs.DEPLOY_ENVIRONMENT == 'prod' ||
+      needs.prepare-variables.outputs.DEPLOY_ENVIRONMENT == 'stag' &&
       vars.DEPLOY_PLATFORM == 'azure'
     runs-on: ubuntu-latest
 
