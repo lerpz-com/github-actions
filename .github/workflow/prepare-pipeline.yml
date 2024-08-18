@@ -16,7 +16,25 @@ on:
         value: ${{ jobs.prepare-pipeline.outputs.RUST_TOOLCHAIN }}
 
 jobs:
-  prepare-pipeline:
+  prepare-azure:
+    runs-on: ubuntu-latest
+    if: vars.DEPLOYMENT_PLATFORM == 'azure'
+    steps:
+      - name: Validate log in to Azure using OIDC
+        uses: azure/login@v1
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Azure CLI show account
+        uses: azure/cli@v2
+        with:
+          azcliversion: latest
+          inlineScript: |
+            az account show
+
+  prepare-vriables:
     runs-on: ubuntu-latest
 
     outputs:
@@ -28,24 +46,15 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set deployment environment variable
-        id: deploy-env
-        env:
-          BRANCH: ${{ github.ref_name }}
+      - name: Set deployment platform variable
+        id: deploy-platform
         run: |
-          if [[ $BRANCH == "main" || $BRANCH == "master" ]]; then
-              DEPLOY_ENV=prod
-          elif [[ $BRANCH == "staging" ]]; then
-              DEPLOY_ENV=stag
-          else
-              DEPLOY_ENV=dev
+          if [[ -z $DEPLOYMENT_PLATFORM ]]; then
+              DEPLOYMENT_PLATFORM=Not given
           fi
 
-          echo "DEPLOY_ENV="$DEPLOY_ENV
-          echo "DEPLOY_ENV=$DEPLOY_ENV" >> $GITHUB_OUTPUT
-
-      - name: Set deployment platform variable
-        id: deploy-env
+      - name: Set deployment environment variable
+        id: deploy-environment
         env:
           BRANCH: ${{ github.ref_name }}
         run: |
@@ -90,8 +99,12 @@ jobs:
           echo "### Prepare pipeline:               
           <table>
             <tr>
-              <td>🎯 Deploy env</td>
-              <td>${{ steps.deploy-env.outputs.DEPLOY_ENV }}</td>
+              <td>🎯 Deployment environment</td>
+              <td>${{ steps.deploy-environment.outputs.DEPLOY_ENV }}</td>
+            </tr>
+            <tr>
+              <td>🚀 Deployment platform</td>
+              <td>${{ steps.deploy-platform.outputs.IMAGE_NAME }}</td>
             </tr>
             <tr>
               <td>🦀 Rust toolchain</td>
