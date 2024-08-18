@@ -17,11 +17,16 @@ on:
 
 jobs:
   prepare-azure:
-    runs-on: ubuntu-latest
     if: vars.DEPLOY_PLATFORM == 'azure'
+    runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write
+      contents: read
+
     steps:
       - name: Validate log in to Azure using OIDC
-        uses: azure/login@v1
+        uses: azure/login@v2
         with:
           client-id: ${{ vars.AZURE_CLIENT_ID }}
           tenant-id: ${{ vars.AZURE_TENANT_ID }}
