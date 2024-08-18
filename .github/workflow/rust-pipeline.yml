@@ -1,4 +1,4 @@
-name: Project pipeline to deploy rust projects using docker
+name: Project pipeline to deploy rust projects using containers
 
 on:
   workflow_call:
