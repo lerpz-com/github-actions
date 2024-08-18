@@ -11,6 +11,8 @@ on:
 jobs:
   terraform-plan:
     runs-on: ubuntu-latest
+    
+    environment: ${{ inputs.DEPLOY_ENV }}
 
     steps:
       - name: Checkout code

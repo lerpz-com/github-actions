@@ -11,6 +11,8 @@ on:
 jobs:
   terraform-apply:
     runs-on: ubuntu-latest
+    
+    environment: ${{ inputs.DEPLOY_ENV }}
 
     permissions:
       id-token: write
