@@ -11,10 +11,6 @@ on:
         description: The name of the image to build
         value: ${{ jobs.prepare-pipeline.outputs.IMAGE_NAME }}
 
-      RUST_TOOLCHAIN:
-        description: The toolchain for Rust to use
-        value: ${{ jobs.prepare-pipeline.outputs.RUST_TOOLCHAIN }}
-
 jobs:
   prepare-azure:
     if: vars.DEPLOY_PLATFORM == 'azure'
@@ -28,7 +24,6 @@ jobs:
       - name: Validate log in to Azure using OIDC
         uses: azure/login@v2
         with:
-          auth-type: IDENTITY
           client-id: ${{ vars.AZURE_CLIENT_ID }}
           tenant-id: ${{ vars.AZURE_TENANT_ID }}
           subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
@@ -53,9 +48,11 @@ jobs:
 
       - name: Set deployment platform variable
         id: deploy-platform
+        env:
+          DEPLOY_PLATFORM: ${{ github.event.inputs.DEPLOY_PLATFORM }}
         run: |
-          if [[ -z $DEPLOYMENT_PLATFORM ]]; then
-              DEPLOYMENT_PLATFORM=Not given
+          if [[ -z $DEPLOY_PLATFORM ]]; then
+              DEPLOY_PLATFORM=Not given
           fi
 
       - name: Set deployment environment variable
@@ -93,7 +90,7 @@ jobs:
             </tr>
             <tr>
               <td>🚀 Deployment platform</td>
-              <td>${{ steps.deploy-platform.outputs.IMAGE_NAME }}</td>
+              <td>${{ steps.deploy-platform.outputs.DEPLOY_PLATFORM }}</td>
             </tr>
             <tr>
               <td>🐳 Image name</td>

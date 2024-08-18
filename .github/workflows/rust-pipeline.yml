@@ -25,7 +25,7 @@ jobs:
 
   deploy-aci:
     uses: ./.github/workflows/deploy-aci.yml
-    needs: [prepare-pipeline, build-and-push-image, terraform-apply]
+    needs: [prepare-pipeline, build-and-push-image]
     secrets: inherit
     with:
       DEPLOY_ENV: ${{ needs.prepare-pipeline.outputs.DEPLOY_ENV }}
