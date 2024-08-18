@@ -52,7 +52,7 @@ jobs:
           DEPLOY_PLATFORM: ${{ github.event.inputs.DEPLOY_PLATFORM }}
         run: |
           if [[ -z $DEPLOY_PLATFORM ]]; then
-              DEPLOY_PLATFORM=Not given
+              DEPLOY_PLATFORM="Not given"
           fi
 
       - name: Set deployment environment variable
