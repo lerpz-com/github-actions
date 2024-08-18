@@ -38,8 +38,7 @@ jobs:
     runs-on: ubuntu-latest
 
     outputs:
-      DEPLOY_ENV: ${{ steps.deploy-env.outputs.DEPLOY_ENV }}
-      RUST_TOOLCHAIN: ${{ steps.rust-toolchain.outputs.RUST_TOOLCHAIN }}
+      DEPLOY_ENV: ${{ steps.deploy-environment.outputs.DEPLOY_ENV }}
       IMAGE_NAME: ${{ steps.image-name.outputs.IMAGE_NAME }}
 
     steps:
@@ -69,22 +68,6 @@ jobs:
           echo "DEPLOY_ENV="$DEPLOY_ENV
           echo "DEPLOY_ENV=$DEPLOY_ENV" >> $GITHUB_OUTPUT
 
-      - name: Set the Rust toolchain info
-        id: rust-toolchain
-        env:
-          RUST_TOOLCHAIN: ${{ vars.RUST_TOOLCHAIN }}
-        run: |
-          if  [[ -f rust-toolchain.toml ]]; then
-              RUST_TOOLCHAIN=rust-toolchain.toml
-          elif [[ -n $RUST_TOOLCHAIN ]]; then
-              RUST_TOOLCHAIN=$RUST_TOOLCHAIN
-          else
-              RUST_TOOLCHAIN=stable
-          fi
-
-          echo "RUST_TOOLCHAIN="$RUST_TOOLCHAIN
-          echo "RUST_TOOLCHAIN=$RUST_TOOLCHAIN" >> $GITHUB_OUTPUT
-
       - name: Set docker image name
         id: image-name
         env:
@@ -105,10 +88,6 @@ jobs:
             <tr>
               <td>🚀 Deployment platform</td>
               <td>${{ steps.deploy-platform.outputs.IMAGE_NAME }}</td>
-            </tr>
-            <tr>
-              <td>🦀 Rust toolchain</td>
-              <td>${{ steps.rust-toolchain.outputs.RUST_TOOLCHAIN }}</td>
             </tr>
             <tr>
               <td>🐳 Image name</td>

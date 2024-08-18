@@ -17,7 +17,7 @@ jobs:
 
   terraform-apply:
     uses: ./.github/workflows/terraform-apply.yml
-    needs: [terraform-plan]
+    needs: [prepare-pipeline, terraform-plan]
     secrets: inherit
     with:
       DEPLOY_ENV: ${{ needs.prepare-pipeline.outputs.DEPLOY_ENV }}
