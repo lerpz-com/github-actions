@@ -66,7 +66,7 @@ jobs:
           <table>
             <tr>
               <td>🎯 Deployment environment</td>
-              <td>${{ steps.deploy-environment.outputs.DEPLOY_ENV }}</td>
+              <td>${{ steps.deploy-env.outputs.DEPLOY_ENV }}</td>
             </tr>
             <tr>
               <td>🚀 Deployment platform</td>
