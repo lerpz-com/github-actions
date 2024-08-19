@@ -62,9 +62,10 @@ jobs:
 
       - name: Show Azure credentials (TEMPORARY)
         run: |
-          echo  ${{ vars.AZURE_CLIENT_ID }}
-          echo  ${{ vars.AZURE_SUBSCRIPTIOIN_ID }}
-          echo  ${{ vars.AZURE_TENANT_ID }}
+          echo "Azure credentials:"
+          echo "CLIENT_ID=${{ vars.AZURE_CLIENT_ID }}"
+          echo "SUBSCRIPTION_ID=${{ vars.AZURE_SUBSCRIPTIOIN_ID }}"
+          echo "TENANT_ID=${{ vars.AZURE_TENANT_ID }}"
 
       - name: Write prepare summary
         run: |
