@@ -93,6 +93,12 @@ jobs:
       id-token: write
 
     steps:
+      - name: Show Azure credentials (TEMPORARY)
+        run: |
+          echo  ${{ vars.AZURE_CLIENT_ID }}
+          echo  ${{ vars.AZURE_SUBSCRIPTIOIN_ID }}
+          echo  ${{ vars.AZURE_TENANT_ID }}
+
       - name: Validate login to Azure using OIDC
         uses: azure/login@v2
         with:
