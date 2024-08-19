@@ -28,9 +28,7 @@ jobs:
         env:
           DEPLOY_PLATFORM: ${{ vars.DEPLOY_PLATFORM }}
         run: |
-          if [[ -v $DEPLOY_PLATFORM ]]; then
-              DEPLOY_PLATFORM=$DEPLOY_PLATFORM
-          else
+          if [[ -z $DEPLOY_PLATFORM ]]; then
               DEPLOY_PLATFORM="Not specified"
           fi
 
