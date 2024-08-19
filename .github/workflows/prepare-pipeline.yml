@@ -97,8 +97,8 @@ jobs:
         uses: azure/login@v2
         with:
           client-id: ${{ vars.AZURE_CLIENT_ID }}
-          tenant-id: ${{ vars.AZURE_TENANT_ID }}
           subscription-id: ${{ vars.AZURE_SUBSCRIPTIOIN_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
 
       - name: Azure CLI show account
         uses: azure/cli@v2
