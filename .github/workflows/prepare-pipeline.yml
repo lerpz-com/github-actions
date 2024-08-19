@@ -60,6 +60,12 @@ jobs:
           echo "IMAGE_NAME=$IMAGE_NAME"
           echo "IMAGE_NAME=$IMAGE_NAME" >> $GITHUB_OUTPUT
 
+      - name: Show Azure credentials (TEMPORARY)
+        run: |
+          echo  ${{ vars.AZURE_CLIENT_ID }}
+          echo  ${{ vars.AZURE_SUBSCRIPTIOIN_ID }}
+          echo  ${{ vars.AZURE_TENANT_ID }}
+
       - name: Write prepare summary
         run: |
           echo "### Prepare pipeline:               
@@ -93,11 +99,6 @@ jobs:
       id-token: write
 
     steps:
-      - name: Show Azure credentials (TEMPORARY)
-        run: |
-          echo  ${{ vars.AZURE_CLIENT_ID }}
-          echo  ${{ vars.AZURE_SUBSCRIPTIOIN_ID }}
-          echo  ${{ vars.AZURE_TENANT_ID }}
 
       - name: Validate login to Azure using OIDC
         uses: azure/login@v2
