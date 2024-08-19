@@ -65,12 +65,12 @@ jobs:
           echo "### Prepare pipeline:               
           <table>
             <tr>
-              <td>🎯 Deployment environment</td>
-              <td>${{ steps.deploy-env.outputs.DEPLOY_ENV }}</td>
-            </tr>
-            <tr>
               <td>🚀 Deployment platform</td>
               <td>${{ steps.deploy-platform.outputs.DEPLOY_PLATFORM }}</td>
+            </tr>
+            <tr>
+              <td>🎯 Deployment environment</td>
+              <td>${{ steps.deploy-env.outputs.DEPLOY_ENV }}</td>
             </tr>
             <tr>
               <td>🐳 Image name</td>
@@ -97,6 +97,7 @@ jobs:
       - name: Validate login to Azure using OIDC
         uses: azure/login@v2
         with:
+          auth-type: IDENTITY
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
