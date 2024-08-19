@@ -31,16 +31,9 @@ jobs:
       DEPLOY_ENV: ${{ needs.prepare-pipeline.outputs.DEPLOY_ENV }}
       IMAGE_NAME: ${{ needs.prepare-pipeline.outputs.IMAGE_NAME }}
 
-  terraform-plan:
-    uses: ./.github/workflows/terraform-plan.yml
-    needs: [prepare-pipeline, build-and-push-image]
-    secrets: inherit
-    with:
-      DEPLOY_ENV: ${{ needs.prepare-pipeline.outputs.DEPLOY_ENV }}
-
-  terraform-apply:
-    uses: ./.github/workflows/terraform-apply.yml
-    needs: [prepare-pipeline, terraform-plan]
+  terraform:
+    uses: ./.github/workflows/terraform.yml
+    needs: [prepare-pipeline]
     secrets: inherit
     with:
       DEPLOY_ENV: ${{ needs.prepare-pipeline.outputs.DEPLOY_ENV }}
