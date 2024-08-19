@@ -5,11 +5,11 @@ on:
     outputs:
       DEPLOY_ENV:
         description: Deployment environment (prod, stag or dev)
-        value: ${{ jobs.prepare-pipeline.outputs.DEPLOY_ENV }}
+        value: ${{ jobs.prepare-variables.outputs.DEPLOY_ENV }}
 
       IMAGE_NAME:
         description: The name of the image to build
-        value: ${{ jobs.prepare-pipeline.outputs.IMAGE_NAME }}
+        value: ${{ jobs.prepare-variables.outputs.IMAGE_NAME }}
 
 jobs:
   prepare-variables:
@@ -22,13 +22,15 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
+      
       - name: Set deployment platform variable
         id: deploy-platform
         env:
           DEPLOY_PLATFORM: ${{ github.event.inputs.DEPLOY_PLATFORM }}
         run: |
-          if [[ -z $DEPLOY_PLATFORM ]]; then
+          if [[ -v $DEPLOY_PLATFORM ]]; then
+              DEPLOY_PLATFORM=$DEPLOY_PLATFORM
+          else
               DEPLOY_PLATFORM="Not specified"
           fi
 
@@ -97,7 +99,6 @@ jobs:
       - name: Validate login to Azure using OIDC
         uses: azure/login@v2
         with:
-          auth-type: IDENTITY
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
