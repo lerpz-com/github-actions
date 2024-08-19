@@ -23,12 +23,6 @@ jobs:
         with:
           terraform_version: 1.9.2
       
-      - name: Shows the azure stuff (TEMPORARY)
-        run: |
-          echo ${{ secrets.AZURE_CLIENT_ID }}
-          echo ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-          echo ${{ secrets.AZURE_TENANT_ID }}
-
       - name: Terraform plan
         run: terraform plan -var "deploy_env=${{ github.event.inputs.DEPLOY_ENV }}"
         env:
