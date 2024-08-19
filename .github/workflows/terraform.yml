@@ -28,7 +28,7 @@ jobs:
           terraform_version: 1.9.2
       
       - name: Terraform plan
-        run: terraform plan -var "deploy_env=${{ github.event.inputs.DEPLOY_ENV }}"
+        run: terraform plan -var "deploy_env=${{ inputs.DEPLOY_ENV }}"
         working-directory: terraform
         env:
           ARM_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
@@ -65,7 +65,7 @@ jobs:
           subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
 
       - name: Terraform apply
-        run: terraform apply -auto-approve -var "deploy_env=${{ github.event.inputs.DEPLOY_ENV }}"
+        run: terraform apply -auto-approve -var "deploy_env=${{ inputs.DEPLOY_ENV }}"
         working-directory: terraform
         env:
           ARM_CLIENT_ID: ${{ vars.ARM_CLIENT_ID }}
