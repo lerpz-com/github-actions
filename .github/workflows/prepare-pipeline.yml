@@ -26,7 +26,7 @@ jobs:
       - name: Set deployment platform variable
         id: deploy-platform
         env:
-          DEPLOY_PLATFORM: ${{ github.event.inputs.DEPLOY_PLATFORM }}
+          DEPLOY_PLATFORM: ${{ vars.DEPLOY_PLATFORM }}
         run: |
           if [[ -v $DEPLOY_PLATFORM ]]; then
               DEPLOY_PLATFORM=$DEPLOY_PLATFORM
