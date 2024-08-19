@@ -33,7 +33,7 @@ jobs:
 
   terraform:
     uses: ./.github/workflows/terraform.yml
-    needs: [prepare-pipeline]
+    needs: [prepare-pipeline, lint-and-test]
     secrets: inherit
     with:
       DEPLOY_ENV: ${{ needs.prepare-pipeline.outputs.DEPLOY_ENV }}
