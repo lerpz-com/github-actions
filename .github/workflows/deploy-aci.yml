@@ -51,7 +51,7 @@ jobs:
         resource-group: ${{ github.event.repository.name }}-${{ inputs.DEPLOY_ENV }}
         dns-name-label: ${{ github.event.repository.name }}-${{ inputs.DEPLOY_ENV }}
         name: ${{ github.event.repository.name }}-container-${{ inputs.DEPLOY_ENV }}
-        image: ${{ inputs.IMAGE_NAME }}:latest
+        image: ${{ inputs.IMAGE_NAME }}
         registry-login-server: ${{ env.DOCKER_REGISTRY }}
         registry-username: ${{ github.actor }}
         registry-password: ${{ secrets.GITHUB_TOKEN }}
