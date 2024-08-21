@@ -18,31 +18,28 @@ jobs:
     
     environment: ${{ inputs.DEPLOY_ENV }}
 
+    env:
+        ARM_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
+        ARM_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+        ARM_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
+        ARM_USE_OIDC: true
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
 
       - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v1
+        uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: 1.9.2
       
       - name: Terraform init
         working-directory: terraform
-        env:
-          ARM_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
-          ARM_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
-          ARM_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
-          ARM_USE_OIDC: true
         run: terraform init -backend-config=env/${{ inputs.DEPLOY_ENV }}.hcl
       
       - name: Terraform plan
         working-directory: terraform
         env:
-          ARM_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
-          ARM_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
-          ARM_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
-          ARM_USE_OIDC: true
           DEPLOY_ENV: ${{ inputs.DEPLOY_ENV }}
         run: terraform plan -var "deploy_env=$DEPLOY_ENV" -no-color -out tfplan
 
@@ -59,12 +56,18 @@ jobs:
     
     environment: ${{ inputs.DEPLOY_ENV }}
 
+    env:
+        ARM_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
+        ARM_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+        ARM_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
+        ARM_USE_OIDC: true
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
 
       - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v1
+        uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: 1.9.2
 
@@ -77,11 +80,6 @@ jobs:
 
       - name: Terraform init
         working-directory: terraform
-        env:
-          ARM_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
-          ARM_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
-          ARM_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
-          ARM_USE_OIDC: true
         run: terraform init -backend-config=env/${{ inputs.DEPLOY_ENV }}.hcl
       
       - name: Download terraform plan
@@ -92,9 +90,4 @@ jobs:
  
       - name: Terraform apply
         working-directory: terraform
-        env:
-          ARM_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
-          ARM_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
-          ARM_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
-          ARM_USE_OIDC: true
         run: terraform apply -auto-approve tfplan
