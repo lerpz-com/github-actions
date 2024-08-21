@@ -19,4 +19,5 @@ flowchart LR;
     PA --> RLAT[rust-lint-and-test]
     RLAT --> BAPI[build-and-push-image]
     BAPI --> DA[deploy-aci]
+    TA --> DA
 ```

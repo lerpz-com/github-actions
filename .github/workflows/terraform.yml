@@ -28,28 +28,29 @@ jobs:
           terraform_version: 1.9.2
       
       - name: Terraform init
-        run: terraform init -backend-config=env/${{ inputs.DEPLOY_ENV }}.hcl
         working-directory: terraform
         env:
           ARM_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
           ARM_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
           ARM_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
           ARM_USE_OIDC: true
+        run: terraform init -backend-config=env/${{ inputs.DEPLOY_ENV }}.hcl
       
       - name: Terraform plan
-        run: terraform plan -var "deploy_env=${{ inputs.DEPLOY_ENV }}" -out terraform.plan
         working-directory: terraform
         env:
           ARM_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
           ARM_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
           ARM_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
           ARM_USE_OIDC: true
+          DEPLOY_ENV: ${{ inputs.DEPLOY_ENV }}
+        run: terraform plan -var "deploy_env=$DEPLOY_ENV" -no-color -out terraform.plan >> $GITHUB_OUTPUT
 
       - name: Save terraform plan
         uses: actions/upload-artifact@v4
         with:
           name: terraform-plan
-          path: terraform.plan
+          path: terraform/terraform.plan
 
   terraform-apply:
     runs-on: ubuntu-latest
@@ -75,13 +76,13 @@ jobs:
           subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
 
       - name: Terraform init
-        run: terraform init -backend-config=env/${{ inputs.DEPLOY_ENV }}.hcl
         working-directory: terraform
         env:
           ARM_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
           ARM_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
           ARM_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
           ARM_USE_OIDC: true
+        run: terraform init -backend-config=env/${{ inputs.DEPLOY_ENV }}.hcl
       
       - name: Download terraform plan
         uses: actions/download-artifact@v4
@@ -89,10 +90,10 @@ jobs:
           name: terraform-plan
  
       - name: Terraform apply
-        run: terraform apply -auto-approve terraform.plan
         working-directory: terraform
         env:
           ARM_CLIENT_ID: ${{ vars.ARM_CLIENT_ID }}
           ARM_SUBSCRIPTION_ID: ${{ vars.ARM_SUBSCRIPTION_ID }}
           ARM_TENANT_ID: ${{ vars.ARM_TENANT_ID }}
           ARM_USE_OIDC: true
+        run: terraform apply -auto-approve terraform.plan
