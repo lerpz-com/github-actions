@@ -116,6 +116,12 @@ jobs:
     runs-on: ubuntu-latest
 
     environment: ${{ needs.prepare-variables.outputs.DEPLOY_ENV }}
+  
+    steps:
+      - name: Prepare environment
+        run: |
+          echo "Prepare environment for $DEPLOY_ENV"
+          echo "Prepare environment for $DEPLOY_ENV" >> $GITHUB_OUTPUT
 
   prepare-azure:
     if: |
