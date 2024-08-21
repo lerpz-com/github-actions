@@ -88,6 +88,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: terraform-plan
+          path: terraform
  
       - name: Terraform apply
         working-directory: terraform
