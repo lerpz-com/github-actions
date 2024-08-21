@@ -46,7 +46,11 @@ jobs:
         tenant-id: ${{ vars.AZURE_TENANT_ID }}
 
     - name: Pull Docker image from registry
-      run: docker pull ${{ inputs.IMAGE_PATH }}
+      env:
+        IMAGE_PATH: ${{ inputs.IMAGE_PATH }}
+      run: |
+        echo "Pulling image $IMAGE_PATH from registry"
+        docker pull $IMAGE_PATH
 
     - name: Deploy to Azure Container Instances
       uses: azure/aci-deploy@v1
