@@ -30,8 +30,8 @@ jobs:
       - name: Validate required variables
         id: required-vars
         run: |
-          echo "$ALLMYSECRETS"
-          echo "$ALLMYVARS"
+          echo $ALLMYSECRETS
+          echo $ALLMYVARS
 
           require_variables=("PROJECT_TYPE")
 
