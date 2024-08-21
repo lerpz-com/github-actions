@@ -16,7 +16,7 @@ on:
     outputs:
       IMAGE_PATH:
         description: Name of Docker image
-        value: ${{ jobs.build-and-push-image.outputs.DOCKER_IMAGE }}
+        value: ${{ jobs.build-and-push-image.outputs.IMAGE_PATH }}
 
 env:
   DOCKER_REGISTRY: ghcr.io
