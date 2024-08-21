@@ -42,16 +42,16 @@ jobs:
           required_variables=(PROJECT_TYPE)
 
           while IFS= read -r env_var; do
-              export $env_var
-          done < <(echo $SECRETS_CONTEXT | jq -r 'to_entries | .[] | .key + "=\"" + (.value | gsub("\r\n|\n|\r"; "")) + "\""')
+            export "$env_var"
+          done < <(echo "$SECRETS_CONTEXT" | jq -r 'to_entries | .[] | .key + "=" + (.value | gsub("\r\n|\n|\r"; "")) + ""')
 
           while IFS= read -r env_var; do
-              export $env_var
-          done < <(echo $VARS_CONTEXT | jq -r 'to_entries | .[] | .key + "=\"" + (.value | gsub("\r\n|\n|\r"; "")) + "\""')
+            export "$env_var"
+          done < <(echo "$VARS_CONTEXT" | jq -r 'to_entries | .[] | .key + "=" + (.value | gsub("\r\n|\n|\r"; "")) + ""')
 
           if [[ -f .env.example ]]; then
             while IFS= read -r line || [[ -n "$line" ]]; do
-            if [[ "$line" == *'='* && "$line" != '#'* ]]; then
+            if [[ "$line" == *'='* && "$line" != '#'* && $line == "ENV=" ]]; then
               required_variables+=("$(echo "$line" | cut -d '=' -f 1)")
             fi
             done < ".env.example"
