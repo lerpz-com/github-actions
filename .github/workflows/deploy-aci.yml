@@ -39,8 +39,8 @@ jobs:
       with:
         resource-group: ${{ github.event.repository.name }}-${{ inputs.DEPLOY_ENV }}
         dns-name-label: ${{ github.event.repository.name }}-${{ inputs.DEPLOY_ENV }}
-        image: ${{ inputs.IMAGE_NAME }}
         name: ${{ github.event.repository.name }}-container-${{ inputs.DEPLOY_ENV }}
+        image: ${{ inputs.IMAGE_NAME }}:latest
         registry-login-server: ghcr.io
         registry-username: ${{ github.actor }}
         registry-password: ${{ secrets.GITHUB_TOKEN }}
