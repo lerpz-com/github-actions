@@ -44,13 +44,13 @@ jobs:
           ARM_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
           ARM_USE_OIDC: true
           DEPLOY_ENV: ${{ inputs.DEPLOY_ENV }}
-        run: terraform plan -var "deploy_env=$DEPLOY_ENV" -no-color -out terraform.plan >> $GITHUB_OUTPUT
+        run: terraform plan -var "deploy_env=$DEPLOY_ENV" -no-color -out tfplan
 
       - name: Save terraform plan
         uses: actions/upload-artifact@v4
         with:
           name: terraform-plan
-          path: terraform/terraform.plan
+          path: terraform/tfplan
 
   terraform-apply:
     runs-on: ubuntu-latest
@@ -96,4 +96,4 @@ jobs:
           ARM_SUBSCRIPTION_ID: ${{ vars.ARM_SUBSCRIPTION_ID }}
           ARM_TENANT_ID: ${{ vars.ARM_TENANT_ID }}
           ARM_USE_OIDC: true
-        run: terraform apply -auto-approve terraform.plan
+        run: terraform apply -auto-approve tfplan
