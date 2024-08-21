@@ -7,6 +7,10 @@ on:
         description: The project type
         value: ${{ jobs.prepare-variables.outputs.DEPLOY_ENV }}
 
+      DEPLOY_PLATFORM:
+        description: Deployment platform
+        value: ${{ jobs.prepare-variables.outputs.DEPLOY_ENV }}
+        
       DEPLOY_ENV:
         description: Deployment environment (prod, stag or dev)
         value: ${{ jobs.prepare-variables.outputs.DEPLOY_ENV }}
@@ -20,6 +24,8 @@ jobs:
     runs-on: ubuntu-latest
 
     outputs:
+      PROJECT_TYPE: ${{ steps.required-vars.outputs.PROJECT_TYPE }}
+      DEPLOY_PLATFORM: ${{ steps.deploy-platform.outputs.DEPLOY_PLATFORM }}
       DEPLOY_ENV: ${{ steps.deploy-env.outputs.DEPLOY_ENV }}
       IMAGE_NAME: ${{ steps.image-name.outputs.IMAGE_NAME }}
 
