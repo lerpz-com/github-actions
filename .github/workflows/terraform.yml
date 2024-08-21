@@ -37,7 +37,7 @@ jobs:
           ARM_USE_OIDC: true
       
       - name: Terraform plan
-        run: terraform plan -var "deploy_env=${{ inputs.DEPLOY_ENV }}"
+        run: terraform plan -var "deploy_env=${{ inputs.DEPLOY_ENV }}" -out terraform.plan
         working-directory: terraform
         env:
           ARM_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
