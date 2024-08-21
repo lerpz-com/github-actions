@@ -8,7 +8,7 @@ on:
         required: true
         type: string
 
-      IMAGE_NAME:
+      IMAGE_PATH:
         description: The name of the image to deploy
         required: true
         type: string
@@ -46,7 +46,7 @@ jobs:
         tenant-id: ${{ vars.AZURE_TENANT_ID }}
 
     - name: Pull Docker image from registry
-      run: docker pull ${{ inputs.DOCKER_IMAGE }}
+      run: docker pull ${{ inputs.IMAGE_PATH }}
 
     - name: Deploy to Azure Container Instances
       uses: azure/aci-deploy@v1
@@ -54,7 +54,7 @@ jobs:
         resource-group: ${{ github.event.repository.name }}-${{ inputs.DEPLOY_ENV }}
         dns-name-label: ${{ github.event.repository.name }}-${{ inputs.DEPLOY_ENV }}
         name: ${{ github.event.repository.name }}-container-${{ inputs.DEPLOY_ENV }}
-        image: ${{ inputs.IMAGE_NAME }}
+        image: ${{ inputs.IMAGE_PATH }}
         registry-login-server: ${{ env.DOCKER_REGISTRY }}
         registry-username: ${{ github.actor }}
         registry-password: ${{ secrets.GITHUB_TOKEN }}

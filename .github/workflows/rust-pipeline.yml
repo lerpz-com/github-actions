@@ -36,5 +36,5 @@ jobs:
     secrets: inherit
     with:
       DEPLOY_ENV: ${{ needs.prepare-pipeline.outputs.DEPLOY_ENV }}
-      IMAGE_NAME: ${{ needs.prepare-pipeline.outputs.IMAGE_NAME }}
+      IMAGE_PATH: ${{ needs.build-and-push-image.outputs.IMAGE_PATH }}
 

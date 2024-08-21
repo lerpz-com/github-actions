@@ -14,7 +14,7 @@ on:
         type: string
 
     outputs:
-      DOCKER_IMAGE:
+      IMAGE_PATH:
         description: Name of Docker image
         value: ${{ jobs.build-and-push-image.outputs.DOCKER_IMAGE }}
 
@@ -33,7 +33,7 @@ jobs:
       packages: write
 
     outputs:
-      DOCKER_IMAGE: ${{ steps.docker-meta.outputs.tags }}
+      IMAGE_PATH: ${{ steps.docker-meta.outputs.tags }}
 
     steps:
       - name: Checkout repository
@@ -68,8 +68,8 @@ jobs:
           cache-to: type=gha,mode=max
 
       - name: Write summary
+        env:
+          IMAGE_PATH: ${{ steps.docker-meta.outputs.tags }}
         run: |
           echo "### 🐳 Docker build: 
-          Docker image: \`$DOCKER_IMAGE\`" >> $GITHUB_STEP_SUMMARY
-        env:
-          DOCKER_IMAGE: ${{ steps.docker-meta.outputs.tags }}
+          Docker image: \`$IMAGE_PATH\`" >> $GITHUB_STEP_SUMMARY
