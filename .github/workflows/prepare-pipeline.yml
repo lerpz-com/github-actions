@@ -3,6 +3,10 @@ name: Prepare pipeline and set variables
 on:
   workflow_call:
     outputs:
+      PROJECT_TYPE:
+        description: The project type
+        value: ${{ jobs.prepare-variables.outputs.DEPLOY_ENV }}
+
       DEPLOY_ENV:
         description: Deployment environment (prod, stag or dev)
         value: ${{ jobs.prepare-variables.outputs.DEPLOY_ENV }}
@@ -22,6 +26,35 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Validate required variables
+        id: required-vars
+        run: |
+          echo "$ALLMYSECRETS"
+          echo "$ALLMYVARS"
+
+          require_variables=("PROJECT_TYPE")
+
+          missing_variables=()
+
+          for var in "${require_variables[@]}"; do
+              if [[ -z ${!var} ]]; then
+                missing_variables+=($var)
+              else
+                echo "$var=${!var}"
+                echo "$var=${!var}" >> $GITHUB_OUTPUT
+              fi
+          done
+
+          if [[ ${#missing_variables[@]} -gt 0 ]]; then
+            for var in "${missing_variables[@]}"; do
+              echo "Missing $var variable"
+            done
+            exit 1
+          fi
+
+          echo "PROJECT_TYPE=$PROJECT_TYPE"
+          echo "PROJECT_TYPE=$PROJECT_TYPE" >> $GITHUB_OUTPUT
       
       - name: Set deployment platform variable
         id: deploy-platform
@@ -32,7 +65,7 @@ jobs:
               DEPLOY_PLATFORM="Not specified"
           fi
 
-          echo "DEPLOY_PLATFORM="$DEPLOY_PLATFORM
+          echo "DEPLOY_PLATFORM=$DEPLOY_PLATFORM"
           echo "DEPLOY_PLATFORM=$DEPLOY_PLATFORM" >> $GITHUB_OUTPUT
 
       - name: Set deployment environment variable
@@ -48,7 +81,7 @@ jobs:
               DEPLOY_ENV=dev
           fi
 
-          echo "DEPLOY_ENV="$DEPLOY_ENV
+          echo "DEPLOY_ENV=$DEPLOY_ENV"
           echo "DEPLOY_ENV=$DEPLOY_ENV" >> $GITHUB_OUTPUT
 
       - name: Set docker image name
@@ -77,6 +110,12 @@ jobs:
               <td>${{ steps.image-name.outputs.IMAGE_NAME }}</td>
             </tr>
           </table>" >> $GITHUB_STEP_SUMMARY
+
+  prepare-env:
+    needs: prepare-variables
+    runs-on: ubuntu-latest
+
+    environment: ${{ needs.prepare-variables.outputs.DEPLOY_ENV }}
 
   prepare-azure:
     if: |
