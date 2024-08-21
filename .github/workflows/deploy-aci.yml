@@ -38,7 +38,7 @@ jobs:
       uses: azure/aci-deploy@v1
       with:
         resource-group: ${{ github.event.repository.name }}-${{ inputs.DEPLOY_ENV }}
-        dns-name-label: api.lerpz.com
+        dns-name-label: ${{ github.event.repository.name }}-${{ inputs.DEPLOY_ENV }}
         image: ${{ inputs.IMAGE_NAME }}
         name: ${{ github.event.repository.name }}-container-${{ inputs.DEPLOY_ENV }}
         location: 'West Europe'
