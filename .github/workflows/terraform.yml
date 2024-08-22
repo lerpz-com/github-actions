@@ -4,13 +4,11 @@ on:
   workflow_call:
     inputs:
       DEPLOY_ENV:
-        description: The environment to deploy to
+        description: The environment to use for deployment
         required: true
         type: string
 
-permissions:
-  id-token: write
-  contents: read
+permissions: write-all
 
 jobs:
   terraform-plan:
