@@ -23,6 +23,7 @@ jobs:
       TERRAFORM_CHANGES: ${{ steps.terraform-plan.outputs.TERRAFORM_CHANGES }}
 
     env:
+        GITHUB_TOKEN: ${{ secrets.TF_GITHUB_TOKEN }}
         ARM_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
         ARM_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
         ARM_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
@@ -68,6 +69,7 @@ jobs:
     environment: ${{ inputs.DEPLOY_ENV }}
 
     env:
+        GITHUB_TOKEN: ${{ secrets.TF_GITHUB_TOKEN }}
         ARM_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
         ARM_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
         ARM_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
