@@ -30,12 +30,13 @@ jobs:
       DEPLOY_ENV: ${{ needs.prepare-pipeline.outputs.DEPLOY_ENV }}
       IMAGE_NAME: ${{ needs.prepare-pipeline.outputs.IMAGE_NAME }}
 
-  deploy-aci:
-    uses: ./.github/workflows/deploy-aci.yml
+  deploy-azure:
+    uses: ./.github/workflows/deploy-azure.yml
     if: ${{ needs.prepare-pipeline.outputs.DEPLOY_PLATFORM == 'azure' }}
     needs: [prepare-pipeline, terraform, build-and-push-image]
     secrets: inherit
     with:
+      PROJECT_TYPE: ${{ needs.prepare-pipeline.outputs.PROJECT_TYPE }}
       DEPLOY_ENV: ${{ needs.prepare-pipeline.outputs.DEPLOY_ENV }}
       IMAGE_PATH: ${{ needs.build-and-push-image.outputs.IMAGE_PATH }}
 

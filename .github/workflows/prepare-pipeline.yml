@@ -51,7 +51,7 @@ jobs:
 
           if [[ -f .env.example ]]; then
             while IFS= read -r line || [[ -n "$line" ]]; do
-            if [[ "$line" == *'='* && "$line" != '#'* && $line == "ENV=" ]]; then
+            if [[ "$line" == *'='* && "$line" != '#'* && "$line" != 'ENV='' ]]; then
               required_variables+=("$(echo "$line" | cut -d '=' -f 1)")
             fi
             done < ".env.example"
