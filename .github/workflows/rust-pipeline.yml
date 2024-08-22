@@ -39,4 +39,3 @@ jobs:
       PROJECT_TYPE: ${{ needs.prepare-pipeline.outputs.PROJECT_TYPE }}
       DEPLOY_ENV: ${{ needs.prepare-pipeline.outputs.DEPLOY_ENV }}
       IMAGE_PATH: ${{ needs.build-and-push-image.outputs.IMAGE_PATH }}
-
