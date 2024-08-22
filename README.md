@@ -18,6 +18,6 @@ flowchart LR;
     TP --> TA[terraform-apply]
     PA --> RLAT[rust-lint-and-test]
     RLAT --> BAPI[build-and-push-image]
-    BAPI --> DA[deploy-aci]
+    BAPI --> DA[deploy-azure]
     TA --> DA
 ```
