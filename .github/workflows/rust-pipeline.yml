@@ -32,6 +32,7 @@ jobs:
 
   deploy-aci:
     uses: ./.github/workflows/deploy-aci.yml
+    if: ${{ needs.prepare-pipeline.outputs.DEPLOY_PLATFORM == 'azure' }}
     needs: [prepare-pipeline, terraform, build-and-push-image]
     secrets: inherit
     with:

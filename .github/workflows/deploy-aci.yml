@@ -18,6 +18,7 @@ env:
 
 jobs:
   deploy-container:
+    if: inputs.DEPLOY_ENV == 'prod' || inputs.DEPLOY_ENV == 'stag'
     runs-on: ubuntu-latest
     
     environment: ${{ inputs.DEPLOY_ENV }}
