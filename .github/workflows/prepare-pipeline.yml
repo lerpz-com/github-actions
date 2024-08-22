@@ -5,35 +5,107 @@ on:
     outputs:
       PROJECT_TYPE:
         description: The project type
-        value: ${{ jobs.prepare-variables.outputs.DEPLOY_ENV }}
+        value: ${{ jobs.prepare-deploy-vars.outputs.DEPLOY_ENV }}
 
       DEPLOY_PLATFORM:
         description: Deployment platform
-        value: ${{ jobs.prepare-variables.outputs.DEPLOY_ENV }}
+        value: ${{ jobs.prepare-deploy-vars.outputs.DEPLOY_ENV }}
         
       DEPLOY_ENV:
         description: Deployment environment (prod, stag or dev)
-        value: ${{ jobs.prepare-variables.outputs.DEPLOY_ENV }}
+        value: ${{ jobs.prepare-deploy-vars.outputs.DEPLOY_ENV }}
 
       IMAGE_NAME:
         description: The name of the image to build
-        value: ${{ jobs.prepare-variables.outputs.IMAGE_NAME }}
+        value: ${{ jobs.prepare-deploy-vars.outputs.IMAGE_NAME }}
 
 jobs:
-  prepare-variables:
+  prepare-deploy-vars:
     runs-on: ubuntu-latest
 
     outputs:
-      PROJECT_TYPE: ${{ steps.required-vars.outputs.PROJECT_TYPE }}
-      DEPLOY_PLATFORM: ${{ steps.deploy-platform.outputs.DEPLOY_PLATFORM }}
-      DEPLOY_ENV: ${{ steps.deploy-env.outputs.DEPLOY_ENV }}
-      IMAGE_NAME: ${{ steps.image-name.outputs.IMAGE_NAME }}
+      PROJECT_TYPE: ${{ steps.deploy-vars.outputs.PROJECT_TYPE }}
+      DEPLOY_PLATFORM: ${{ steps.deploy-vars.outputs.DEPLOY_PLATFORM }}
+      DEPLOY_ENV: ${{ steps.deploy-vars.outputs.DEPLOY_ENV }}
+      IMAGE_NAME: ${{ steps.deploy-vars.outputs.IMAGE_NAME }}
+
+      
+    steps:
+      - name: Get deployment variables
+        id: deploy-vars
+        env:
+          PROJECT_TYPE: ${{ vars.PROJECT_TYPE }}
+          DEPLOY_PLATFORM: ${{ vars.DEPLOY_PLATFORM }}
+          BRANCH: ${{ github.ref_name }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+        run: |
+          echo "Checking deployment variables"
+
+          if [[ -z $PROJECT_TYPE ]]; then
+            PROJECT_TYPE="Unknown"
+          fi
+
+          echo "PROJECT_TYPE=$PROJECT_TYPE"
+          echo "PROJECT_TYPE=$PROJECT_TYPE" >> $GITHUB_OUTPUT
+
+
+          if [[ -z $DEPLOY_PLATFORM ]]; then
+            DEPLOY_PLATFORM="None"
+          fi
+
+          echo "DEPLOY_PLATFORM=$DEPLOY_PLATFORM"
+          echo "DEPLOY_PLATFORM=$DEPLOY_PLATFORM" >> $GITHUB_OUTPUT
+
+
+          if [[ $BRANCH == "main" || $BRANCH == "master" ]]; then
+            DEPLOY_ENV="prod"
+          elif [[ $BRANCH == "staging" ]]; then
+            DEPLOY_ENV="stag"
+          else
+            DEPLOY_ENV="dev"
+          fi
+
+          echo "DEPLOY_ENV=$DEPLOY_ENV"
+          echo "DEPLOY_ENV=$DEPLOY_ENV" >> $GITHUB_OUTPUT
+
+
+          IMAGE_NAME=$(echo "${GITHUB_REPOSITORY}" | tr '[:upper:]' '[:lower:]')
+
+          echo "IMAGE_NAME=$IMAGE_NAME"
+          echo "IMAGE_NAME=$IMAGE_NAME" >> $GITHUB_OUTPUT
+
+      - name: Write prepare summary
+        run: |
+          echo "### Prepare pipeline:               
+          <table>
+            <tr>
+              <td>💡 Project type</td>
+              <td>${{ steps.deploy-vars.outputs.PROJECT_TYPE }}</td>
+            </tr>
+            <tr>
+              <td>🚀 Deployment platform</td>
+              <td>${{ steps.deploy-vars.outputs.DEPLOY_PLATFORM }}</td>
+            </tr>
+            <tr>
+              <td>🎯 Deployment environment</td>
+              <td>${{ steps.deploy-vars.outputs.DEPLOY_ENV }}</td>
+            </tr>
+            <tr>
+              <td>🐳 Image name</td>
+              <td>${{ steps.deploy-vars.outputs.IMAGE_NAME }}</td>
+            </tr>
+          </table>" >> $GITHUB_STEP_SUMMARY
+  
+  prepare-env-variables:
+    if: needs.prepare-deploy-vars.outputs.DEPLOY_ENV == 'prod' || needs.prepare-deploy-vars.outputs.DEPLOY_ENV == 'stag'
+    runs-on: ubuntu-latest
+
+    needs: prepare-deploy-vars
+
+    environment: ${{ needs.prepare-deploy-vars.outputs.DEPLOY_ENV }}
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Validate required variables
+      - name: Validate required variables from .env.example
         id: required-vars
         env:
           SECRETS_CONTEXT: ${{ toJson(secrets) }}
@@ -72,78 +144,17 @@ jobs:
             exit 1
           fi
 
-          echo "PROJECT_TYPE=$PROJECT_TYPE"
-          echo "PROJECT_TYPE=$PROJECT_TYPE" >> $GITHUB_OUTPUT
-      
-      - name: Set deployment platform variable
-        id: deploy-platform
-        env:
-          DEPLOY_PLATFORM: ${{ vars.DEPLOY_PLATFORM }}
-        run: |
-          if [[ -z $DEPLOY_PLATFORM ]]; then
-              DEPLOY_PLATFORM="Not specified"
-          fi
-
-          echo "DEPLOY_PLATFORM=$DEPLOY_PLATFORM"
-          echo "DEPLOY_PLATFORM=$DEPLOY_PLATFORM" >> $GITHUB_OUTPUT
-
-      - name: Set deployment environment variable
-        id: deploy-env
-        env:
-          BRANCH: ${{ github.ref_name }}
-        run: |
-          if [[ $BRANCH == "main" || $BRANCH == "master" ]]; then
-              DEPLOY_ENV=prod
-          elif [[ $BRANCH == "staging" ]]; then
-              DEPLOY_ENV=stag
-          else
-              DEPLOY_ENV=dev
-          fi
-
-          echo "DEPLOY_ENV=$DEPLOY_ENV"
-          echo "DEPLOY_ENV=$DEPLOY_ENV" >> $GITHUB_OUTPUT
-
-      - name: Set docker image name
-        id: image-name
-        env:
-          GITHUB_REPOSITORY: ${{ github.repository }}
-        run: |
-          IMAGE_NAME=$(echo "${GITHUB_REPOSITORY}" | tr '[:upper:]' '[:lower:]')
-          echo "IMAGE_NAME=$IMAGE_NAME"
-          echo "IMAGE_NAME=$IMAGE_NAME" >> $GITHUB_OUTPUT
-
-      - name: Write prepare summary
-        run: |
-          echo "### Prepare pipeline:               
-          <table>
-            <tr>
-              <td>💡 Project type</td>
-              <td>${{ steps.required-vars.outputs.PROJECT_TYPE }}</td>
-            </tr>
-            <tr>
-              <td>🚀 Deployment platform</td>
-              <td>${{ steps.deploy-platform.outputs.DEPLOY_PLATFORM }}</td>
-            </tr>
-            <tr>
-              <td>🎯 Deployment environment</td>
-              <td>${{ steps.deploy-env.outputs.DEPLOY_ENV }}</td>
-            </tr>
-            <tr>
-              <td>🐳 Image name</td>
-              <td>${{ steps.image-name.outputs.IMAGE_NAME }}</td>
-            </tr>
-          </table>" >> $GITHUB_STEP_SUMMARY
 
   prepare-azure:
     if: |
-      needs.prepare-variables.outputs.DEPLOY_ENV == 'prod' ||
-      needs.prepare-variables.outputs.DEPLOY_ENV == 'stag' &&
-      vars.DEPLOY_PLATFORM == 'azure'
+      needs.prepare-deploy-vars.outputs.DEPLOY_ENV == 'prod' ||
+      needs.prepare-deploy-vars.outputs.DEPLOY_ENV == 'stag' &&
+      needs.prepare-deploy-vars.outputs.DEPLOY_PLATFORM == 'azure'
     runs-on: ubuntu-latest
 
-    needs: prepare-variables
+    needs: prepare-deploy-vars
 
-    environment: ${{ needs.prepare-variables.outputs.DEPLOY_ENV }}
+    environment: ${{ needs.prepare-deploy-vars.outputs.DEPLOY_ENV }}
 
     permissions:
       id-token: write
