@@ -143,7 +143,6 @@ jobs:
             exit 1
           fi
 
-
   prepare-azure:
     if: |
       needs.prepare-pipeline-vars.outputs.DEPLOY_ENV == 'prod' ||

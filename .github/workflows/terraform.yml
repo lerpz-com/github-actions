@@ -40,7 +40,12 @@ jobs:
       
       - name: Terraform init
         working-directory: terraform
-        run: terraform init -backend-config=env/${{ inputs.DEPLOY_ENV }}.hcl
+        run: |
+          if [[ -d env ]]
+            terraform init -backend-config=env/${{ inputs.DEPLOY_ENV }}.hcl
+          elif
+            terraform init
+          fi
       
       - name: Terraform plan
         id: terraform-plan
