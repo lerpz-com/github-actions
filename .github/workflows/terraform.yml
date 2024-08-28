@@ -39,9 +39,9 @@ jobs:
       - name: Terraform init
         working-directory: terraform
         run: |
-          if [[ -d env ]]
+          if [[ -d env ]]; then
             terraform init -backend-config=env/${{ inputs.DEPLOY_ENV }}.hcl
-          elif
+          else
             terraform init
           fi
       
@@ -93,9 +93,9 @@ jobs:
       - name: Terraform init
         working-directory: terraform
         run: |
-          if [[ -d env ]]
+          if [[ -d env ]]; then
             terraform init -backend-config=env/${{ inputs.DEPLOY_ENV }}.hcl
-          elif
+          else
             terraform init
           fi
       
