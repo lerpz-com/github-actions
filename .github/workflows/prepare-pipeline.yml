@@ -96,7 +96,9 @@ jobs:
           </table>" >> $GITHUB_STEP_SUMMARY
   
   prepare-env-vars:
-    if: needs.prepare-pipeline-vars.outputs.DEPLOY_ENV == 'prod' || needs.prepare-pipeline-vars.outputs.DEPLOY_ENV == 'stag'
+    if: |
+      needs.prepare-pipeline-vars.outputs.DEPLOY_ENV == 'prod' &&
+      needs.prepare-pipeline-vars.outputs.DEPLOY_ENV == 'stag'
     runs-on: ubuntu-latest
 
     needs: prepare-pipeline-vars
@@ -107,23 +109,28 @@ jobs:
       - name: Validate required variables from .env.example
         id: required-vars
         env:
+          DEPLOY_PLATFORM: ${{ needs.prepare-pipeline-vars.outputs.DEPLOY_PLATFORM }}
           SECRETS_CONTEXT: ${{ toJson(secrets) }}
           VARS_CONTEXT: ${{ toJson(vars) }}
         run: |
           required_variables=(PROJECT_TYPE)
 
-          while IFS= read -r env_var; do
-            export "$env_var"
-          done < <(echo "$SECRETS_CONTEXT" | jq -r 'to_entries | .[] | .key + "=" + (.value | gsub("\r\n|\n|\r"; "")) + ""')
+          if [[ $DEPLOY_PLATFORM == 'azure' ]]; then
+            required_variables+=(AZURE_CLIENT_ID AZURE_SUBSCRIPTION_ID AZURE_TENANT_ID)
+          fi
 
-          while IFS= read -r env_var; do
-            export "$env_var"
-          done < <(echo "$VARS_CONTEXT" | jq -r 'to_entries | .[] | .key + "=" + (.value | gsub("\r\n|\n|\r"; "")) + ""')
+          while IFS= read -r key; do
+            export "$key=PRESENT"
+          done < <(echo "$SECRETS_CONTEXT" | jq -r 'keys[]')
+
+          while IFS= read -r key; do
+            export "$key=PRESENT"
+          done < <(echo "$VARS_CONTEXT" | jq -r 'keys[]')
 
           if [[ -f .env.example ]]; then
             while IFS= read -r line || [[ -n "$line" ]]; do
             if [[ "$line" == *'='* && "$line" != '#'* ]]; then
-              required_variables+=("$(echo "$line" | cut -d '=' -f 1)")
+              required_variables+=("$(echo "DOCKER_$line" | cut -d '=' -f 1)")
             fi
             done < ".env.example"
           fi
