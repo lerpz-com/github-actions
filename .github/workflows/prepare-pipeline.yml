@@ -140,6 +140,8 @@ jobs:
           for var in "${required_variables[@]}"; do
             if [[ -z ${!var} ]]; then
               missing_variables+=($var)
+            else 
+              echo "Variable \"$var\" is present"
             fi
           done
 
