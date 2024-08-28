@@ -12,6 +12,13 @@ permissions:
   id-token: write
   contents: read
 
+env:
+  GITHUB_TOKEN: ${{ secrets.TF_GITHUB_TOKEN }}
+  ARM_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
+  ARM_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+  ARM_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
+  ARM_USE_OIDC: true
+
 jobs:
   terraform-plan:
     if: inputs.DEPLOY_ENV == 'prod' || inputs.DEPLOY_ENV == 'stag'
@@ -22,21 +29,12 @@ jobs:
     outputs:
       TERRAFORM_CHANGES: ${{ steps.terraform-plan.outputs.TERRAFORM_CHANGES }}
 
-    env:
-        GITHUB_TOKEN: ${{ secrets.TF_GITHUB_TOKEN }}
-        ARM_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
-        ARM_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
-        ARM_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
-        ARM_USE_OIDC: true
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
-        with:
-          terraform_version: 1.9.2
       
       - name: Terraform init
         working-directory: terraform
@@ -78,21 +76,12 @@ jobs:
     
     environment: ${{ inputs.DEPLOY_ENV }}
 
-    env:
-        GITHUB_TOKEN: ${{ secrets.TF_GITHUB_TOKEN }}
-        ARM_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
-        ARM_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
-        ARM_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
-        ARM_USE_OIDC: true
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
-        with:
-          terraform_version: 1.9.2
 
       - name: Log in to Azure using OIDC
         uses: azure/login@v2
@@ -103,7 +92,12 @@ jobs:
 
       - name: Terraform init
         working-directory: terraform
-        run: terraform init -backend-config=env/${{ inputs.DEPLOY_ENV }}.hcl
+        run: |
+          if [[ -d env ]]
+            terraform init -backend-config=env/${{ inputs.DEPLOY_ENV }}.hcl
+          elif
+            terraform init
+          fi
       
       - name: Download terraform plan
         uses: actions/download-artifact@v4
