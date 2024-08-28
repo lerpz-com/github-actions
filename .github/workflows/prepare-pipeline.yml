@@ -130,7 +130,7 @@ jobs:
           if [[ -f .env.example ]]; then
             while IFS= read -r line || [[ -n "$line" ]]; do
             if [[ "$line" == *'='* && "$line" != '#'* ]]; then
-              required_variables+=("$(echo "DOCKER_$line" | cut -d '=' -f 1)")
+              required_variables+=("$(echo "DOCKER_ENV_$line" | cut -d '=' -f 1)")
             fi
             done < ".env.example"
           fi
