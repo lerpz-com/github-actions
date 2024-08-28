@@ -56,8 +56,11 @@ jobs:
           exitcode=$?
 
           if [[ $exitcode -eq 2 ]]; then
+            echo "TERRAFORM_CHANGES=true"
             echo "TERRAFORM_CHANGES=true" >> $GITHUB_OUTPUT
+            exit 0
           else
+            echo "TERRAFORM_CHANGES=false"
             echo "TERRAFORM_CHANGES=false" >> $GITHUB_OUTPUT
             exit $exitcode
           fi
