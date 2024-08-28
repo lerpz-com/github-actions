@@ -97,7 +97,7 @@ jobs:
   
   prepare-env-vars:
     if: |
-      needs.prepare-pipeline-vars.outputs.DEPLOY_ENV == 'prod' &&
+      needs.prepare-pipeline-vars.outputs.DEPLOY_ENV == 'prod' ||
       needs.prepare-pipeline-vars.outputs.DEPLOY_ENV == 'stag'
     runs-on: ubuntu-latest
 
