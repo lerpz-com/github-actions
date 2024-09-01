@@ -49,10 +49,10 @@ jobs:
         id: terraform-plan
         working-directory: terraform
         env:
-          DEPLOY_ENV: ${{ inputs.DEPLOY_ENV }}
+          TF_VAR_deploy_env: ${{ inputs.DEPLOY_ENV }}
         run: |
           set +e
-          terraform plan -var "deploy_env=$DEPLOY_ENV" -detailed-exitcode -no-color -out tfplan 
+          terraform plan -input=false -detailed-exitcode -no-color -out tfplan 
           exitcode=$?
 
           if [[ $exitcode -eq 2 ]]; then
@@ -110,4 +110,4 @@ jobs:
  
       - name: Terraform apply
         working-directory: terraform
-        run: terraform apply -auto-approve tfplan
+        run: terraform apply -input=false -auto-approve tfplan
