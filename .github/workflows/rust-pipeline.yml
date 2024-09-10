@@ -10,7 +10,7 @@ jobs:
 
   terraform:
     uses: ./.github/workflows/terraform.yml
-    needs: [prepare-pipeline]
+    needs: [prepare-pipeline, build-and-push-image]
     secrets: inherit
     with:
       DEPLOY_ENV: ${{ needs.prepare-pipeline.outputs.DEPLOY_ENV }}
@@ -33,7 +33,7 @@ jobs:
   deploy-azure:
     uses: ./.github/workflows/deploy-azure.yml
     if: ${{ needs.prepare-pipeline.outputs.DEPLOY_PLATFORM == 'azure' }}
-    needs: [prepare-pipeline, terraform, build-and-push-image]
+    needs: [prepare-pipeline, build-and-push-image]
     secrets: inherit
     with:
       PROJECT_TYPE: ${{ needs.prepare-pipeline.outputs.PROJECT_TYPE }}
