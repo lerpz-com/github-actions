@@ -5,11 +5,11 @@ on:
     outputs:
       PROJECT_TYPE:
         description: Project type (e.g. ACI, ACA...)
-        value: ${{ jobs.prepare-pipeline-vars.outputs.DEPLOY_ENV }}
+        value: ${{ jobs.prepare-pipeline-vars.outputs.PROJECT_TYPE }}
 
       DEPLOY_PLATFORM:
         description: Deployment platform (e.g. azure, flyio...)
-        value: ${{ jobs.prepare-pipeline-vars.outputs.DEPLOY_ENV }}
+        value: ${{ jobs.prepare-pipeline-vars.outputs.DEPLOY_PLATFORM }}
         
       DEPLOY_ENV:
         description: Deployment environment (prod, stag or dev)
