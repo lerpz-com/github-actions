@@ -106,7 +106,7 @@ jobs:
     environment: ${{ needs.prepare-pipeline-vars.outputs.DEPLOY_ENV }}
 
     steps:
-      - name: Validate required variables from .env.example
+      - name: Validate required variables
         id: required-vars
         env:
           DEPLOY_PLATFORM: ${{ needs.prepare-pipeline-vars.outputs.DEPLOY_PLATFORM }}
