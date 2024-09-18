@@ -53,7 +53,9 @@ jobs:
         id: docker-meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.DOCKER_REGISTRY }}/${{ github.repository }}
+          images: ${{ env.DOCKER_REGISTRY }}/${{ github.repository }}:${{ inputs.IMAGE_NAME }}
+          tags: |
+            type=sha,event=push
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
