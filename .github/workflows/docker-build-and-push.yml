@@ -14,9 +14,9 @@ on:
         type: string
 
     outputs:
-      DOCKER_IMAGE:
+      IMAGE_PATH:
         description: Name of Docker image
-        value: ${{ jobs.build-and-push-image.outputs.DOCKER_IMAGE }}
+        value: ${{ jobs.build-and-push-image.outputs.IMAGE_PATH }}
 
 env:
   DOCKER_REGISTRY: ghcr.io
@@ -33,7 +33,7 @@ jobs:
       packages: write
 
     outputs:
-      DOCKER_IMAGE: ${{ steps.docker-meta.outputs.tags }}
+      IMAGE_PATH: ${{ steps.docker-meta.outputs.tags }}
 
     steps:
       - name: Checkout repository
@@ -55,8 +55,8 @@ jobs:
         with:
           images: ${{ env.DOCKER_REGISTRY }}/${{ github.repository }}:${{ inputs.IMAGE_NAME }}
           tags: |
-            type=ref,event=branch
             type=sha
+            type=ref,event=branch
             type=raw,value=${{ inputs.DEPLOY_ENV }}
 
       - name: Build and push Docker image
@@ -74,4 +74,4 @@ jobs:
           echo "### 🐳 Docker build: 
           Docker image: \`$DOCKER_IMAGE\`" >> $GITHUB_STEP_SUMMARY
         env:
-          DOCKER_IMAGE: ${{ steps.docker-meta.outputs.tags }}
+          IMAGE_PATH: ${{ steps.docker-meta.outputs.tags }}

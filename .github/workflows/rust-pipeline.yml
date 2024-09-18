@@ -23,7 +23,7 @@ jobs:
       DEPLOY_ENV: ${{ needs.prepare-pipeline.outputs.DEPLOY_ENV }}
 
   build-and-push-image:
-    uses: ./.github/workflows/container-build-and-push.yml
+    uses: ./.github/workflows/docker-build-and-push.yml
     needs: [prepare-pipeline, rust-lint]
     secrets: inherit
     with:
@@ -38,4 +38,4 @@ jobs:
     with:
       PROJECT_TYPE: ${{ needs.prepare-pipeline.outputs.PROJECT_TYPE }}
       DEPLOY_ENV: ${{ needs.prepare-pipeline.outputs.DEPLOY_ENV }}
-      IMAGE_PATH: ${{ needs.build-and-push-image.outputs.IMAGE_PATH }}
+      IMAGE_PATH: ${{ needs.build-and-push-image.outputs.DOCKER_IMAGE }}
