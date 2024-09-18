@@ -57,7 +57,7 @@ jobs:
           tags: |
             type=ref,event=branch
             type=sha
-            type=raw,value=${{ inputs.DEPLOY_ENV == 'stag' }}
+            type=raw,value=${{ inputs.DEPLOY_ENV }}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
