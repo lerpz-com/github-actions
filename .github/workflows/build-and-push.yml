@@ -62,8 +62,6 @@ jobs:
         with:
           context: .
           push: true
-          build-args: |
-            DEPLOY_ENV=${{ inputs.DEPLOY_ENV }}
           tags: ${{ steps.docker-meta.outputs.tags }}
           labels: ${{ steps.docker-meta.outputs.labels }}
           cache-from: type=gha
