@@ -3,7 +3,7 @@ name: Rust project linter and tester
 on:
   workflow_call:
     inputs:
-      DEPLOY_ENV:
+      deploy_env:
         description: Environment to deploy to
         required: true
         type: string
@@ -12,7 +12,7 @@ jobs:
   lint-and-test:
     runs-on: ubuntu-latest
     
-    environment: ${{ inputs.DEPLOY_ENV }}
+    environment: ${{ inputs.deploy_env }}
 
     steps:
       - name: Checkout repository
@@ -47,7 +47,7 @@ jobs:
 
       - name: Lint Rust code with Clippy
         env:
-          DEPLOY_ENV: ${{ inputs.DEPLOY_ENV }}
+          DEPLOY_ENV: ${{ inputs.deploy_env }}
         run: |
           if [[ $DEPLOY_ENV == "prod" ]]; then
             cargo clippy --all-targets --all-features -- -D warnings

@@ -13,4 +13,4 @@ jobs:
     needs: [prepare-pipeline]
     secrets: inherit
     with:
-      DEPLOY_ENV: ${{ needs.prepare-pipeline.outputs.DEPLOY_ENV }}
+      deploy_env: ${{ needs.prepare-pipeline.outputs.DEPLOY_ENV }}

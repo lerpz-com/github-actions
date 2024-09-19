@@ -3,30 +3,27 @@ name: Deploy container to Azure Container Instances
 on:
   workflow_call:
     inputs:
-      PROJECT_TYPE:
+      project_type:
         description: The environment to deploy to
         required: true
         type: string
 
-      DEPLOY_ENV:
+      deploy_env:
         description: The environment to deploy to
         required: true
         type: string
 
-      IMAGE_PATH:
+      image_path:
         description: The path of the image to deploy
         required: true
         type: string
 
-env:
-  DOCKER_REGISTRY: ghcr.io
-
 jobs:
   deploy-aci:
-    if: ${{ inputs.PROJECT_TYPE == 'ACI' }}
+    if: ${{ inputs.project_type == 'ACI' }}
     runs-on: ubuntu-latest
     
-    environment: ${{ inputs.DEPLOY_ENV }}
+    environment: ${{ inputs.deploy_env }}
     
     permissions:
       id-token: write
@@ -40,7 +37,7 @@ jobs:
     - name: Log in to the container registry
       uses: docker/login-action@v3
       with:
-        registry: ${{ env.DOCKER_REGISTRY }}
+        registry: ghcr.io
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
 
@@ -53,7 +50,7 @@ jobs:
 
     - name: Pull Docker image from registry
       env:
-        IMAGE_PATH: ${{ inputs.IMAGE_PATH }}
+        IMAGE_PATH: ${{ inputs.image_path }}
       run: |
         echo "Pulling image $IMAGE_PATH from registry"
         docker pull $IMAGE_PATH
@@ -61,11 +58,11 @@ jobs:
     - name: Deploy to Azure Container Instances
       uses: azure/aci-deploy@v1
       with:
-        resource-group: ${{ github.event.repository.name }}-${{ inputs.DEPLOY_ENV }}
-        dns-name-label: ${{ github.event.repository.name }}-${{ inputs.DEPLOY_ENV }}
-        name: ${{ github.event.repository.name }}-container-${{ inputs.DEPLOY_ENV }}
-        image: ${{ inputs.IMAGE_PATH }}
-        registry-login-server: ${{ env.DOCKER_REGISTRY }}
+        resource-group: ${{ github.event.repository.name }}-${{ inputs.deploy_env }}
+        dns-name-label: ${{ github.event.repository.name }}-${{ inputs.deploy_env }}
+        name: ${{ github.event.repository.name }}-container-${{ inputs.deploy_env }}
+        image: ${{ inputs.image_path }}
+        registry-login-server: ghcr.io
         registry-username: ${{ github.actor }}
         registry-password: ${{ secrets.GITHUB_TOKEN }}
         location: 'West Europe'

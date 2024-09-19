@@ -13,22 +13,22 @@ jobs:
     needs: [prepare-pipeline, build-and-push-image]
     secrets: inherit
     with:
-      DEPLOY_ENV: ${{ needs.prepare-pipeline.outputs.DEPLOY_ENV }}
+      deploy_env: ${{ needs.prepare-pipeline.outputs.deploy_env }}
 
   rust-lint:
     uses: ./.github/workflows/rust-lint-and-test.yml
     needs: [prepare-pipeline]
     secrets: inherit
     with:
-      DEPLOY_ENV: ${{ needs.prepare-pipeline.outputs.DEPLOY_ENV }}
+      deploy_env: ${{ needs.prepare-pipeline.outputs.deploy_env }}
 
   build-and-push-image:
     uses: ./.github/workflows/docker-build-and-push.yml
     needs: [prepare-pipeline, rust-lint]
     secrets: inherit
     with:
-      DEPLOY_ENV: ${{ needs.prepare-pipeline.outputs.DEPLOY_ENV }}
-      IMAGE_NAME: ${{ needs.prepare-pipeline.outputs.IMAGE_NAME }}
+      deploy_env: ${{ needs.prepare-pipeline.outputs.deploy_env }}
+      image_name: ${{ needs.prepare-pipeline.outputs.image_name }}
 
   deploy-azure:
     uses: ./.github/workflows/deploy-azure.yml
@@ -36,6 +36,6 @@ jobs:
     needs: [prepare-pipeline, build-and-push-image]
     secrets: inherit
     with:
-      PROJECT_TYPE: ${{ needs.prepare-pipeline.outputs.PROJECT_TYPE }}
-      DEPLOY_ENV: ${{ needs.prepare-pipeline.outputs.DEPLOY_ENV }}
-      IMAGE_PATH: ${{ needs.build-and-push-image.outputs.DOCKER_IMAGE }}
+      project_type: ${{ needs.prepare-pipeline.outputs.PROJECT_TYPE }}
+      deploy_env: ${{ needs.prepare-pipeline.outputs.DEPLOY_ENV }}
+      image_path: ${{ needs.build-and-push-image.outputs.image_path }}
