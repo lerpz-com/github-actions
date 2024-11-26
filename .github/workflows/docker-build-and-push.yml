@@ -13,6 +13,11 @@ on:
         required: true
         type: string
 
+      package_version:
+        description: The version of the package to build
+        required: true
+        type: string
+
     outputs:
       image_path:
         description: Name of Docker image
@@ -53,8 +58,8 @@ jobs:
           images: ghcr.io/${{ inputs.image_name }}
           tags: |
             type=sha
-            type=ref,event=branch
             type=raw,value=${{ inputs.deploy_env }}
+            type=raw,value=${{ inputs.package_version }}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
@@ -68,7 +73,7 @@ jobs:
 
       - name: Write summary
         run: |
-          echo "### 🐳 Docker build: 
+          echo "### 🐳 Docker build:
           Docker image: \`$DOCKER_IMAGE\`" >> $GITHUB_STEP_SUMMARY
         env:
           IMAGE_PATH: ${{ steps.docker-meta.outputs.tags }}

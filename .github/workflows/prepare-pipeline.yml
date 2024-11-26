@@ -9,29 +9,34 @@ on:
 
       deploy_platform:
         description: Deployment platform (e.g. azure, flyio...)
-        value: ${{ jobs.prepare-pipeline-vars.outputs.DEPLOY_PLATFORM }}
-        
+        value: ${{ jobs.prepare-pipeline-vars.outputs.deploy_platform }}
+
       deploy_env:
         description: Deployment environment (prod, stag or dev)
-        value: ${{ jobs.prepare-pipeline-vars.outputs.DEPLOY_ENV }}
+        value: ${{ jobs.prepare-pipeline-vars.outputs.deploy_env }}
 
       image_name:
         description: Name of the container image
-        value: ${{ jobs.prepare-pipeline-vars.outputs.IMAGE_NAME }}
+        value: ${{ jobs.prepare-pipeline-vars.outputs.image_name }}
+
+      package_version:
+        description: Package version of the crate
+        value: ${{ jobs.prepare-pipeline-vars.outputs.package_version }}
 
 jobs:
   prepare-pipeline-vars:
     runs-on: ubuntu-latest
 
     outputs:
-      project_type: ${{ steps.pipeline-vars.outputs.PROJECT_TYPE }}
-      deploy_platform: ${{ steps.pipeline-vars.outputs.DEPLOY_PLATFORM }}
-      deploy_env: ${{ steps.pipeline-vars.outputs.DEPLOY_ENV }}
-      image_name: ${{ steps.pipeline-vars.outputs.IMAGE_NAME }}
+      project_type: ${{ steps.project-type.outputs.PROJECT_TYPE }}
+      deploy_platform: ${{ steps.deploy-platform.outputs.DEPLOY_PLATFORM }}
+      deploy_env: ${{ steps.deploy-env.outputs.DEPLOY_ENV }}
+      image_name: ${{ steps.image-name.outputs.IMAGE_NAME }}
+      package_version: ${{ steps.package-version.outputs.PACKAGE_VERSION }}
 
     steps:
-      - name: Get deployment variables
-        id: pipeline-vars
+      - name: Get project type
+        id: project-type
         env:
           PROJECT_TYPE: ${{ vars.PROJECT_TYPE }}
           DEPLOY_PLATFORM: ${{ vars.DEPLOY_PLATFORM }}
@@ -47,7 +52,11 @@ jobs:
           echo "PROJECT_TYPE=$PROJECT_TYPE"
           echo "PROJECT_TYPE=$PROJECT_TYPE" >> $GITHUB_OUTPUT
 
-
+      - name: Get deployment platform
+        id: deploy-platform
+        env:
+          DEPLOY_PLATFORM: ${{ vars.DEPLOY_PLATFORM }}
+        run: |
           if [[ -z $DEPLOY_PLATFORM ]]; then
             DEPLOY_PLATFORM="None"
           fi
@@ -55,6 +64,12 @@ jobs:
           echo "DEPLOY_PLATFORM=$DEPLOY_PLATFORM"
           echo "DEPLOY_PLATFORM=$DEPLOY_PLATFORM" >> $GITHUB_OUTPUT
 
+      - name: Get project type
+        id: deploy-env
+        env:
+          BRANCH: ${{ github.ref_name }}
+        run: |
+          echo "Checking deployment environment"
 
           if [[ $BRANCH == "main" || $BRANCH == "master" ]]; then
             DEPLOY_ENV="prod"
@@ -67,40 +82,57 @@ jobs:
           echo "DEPLOY_ENV=$DEPLOY_ENV"
           echo "DEPLOY_ENV=$DEPLOY_ENV" >> $GITHUB_OUTPUT
 
-
+      - name: Get image name
+        id: image-name
+        env:
+          BRANCH: ${{ github.ref_name }}
+        run: |
           IMAGE_NAME=$(echo "${GITHUB_REPOSITORY}" | tr '[:upper:]' '[:lower:]')
 
           echo "IMAGE_NAME=$IMAGE_NAME"
           echo "IMAGE_NAME=$IMAGE_NAME" >> $GITHUB_OUTPUT
 
+      - name: Get package version
+        id: package-version
+        env:
+          BRANCH: ${{ github.ref_name }}
+        run: |
+          PACKAGE_VERSION=$(cargo metadata --format-version=1 --no-deps | jq '.packages[0].version')
+
+          echo "PACKAGE_VERSION=$PACKAGE_VERSION"
+          echo "PACKAGE_VERSION=$PACKAGE_VERSION" >> $GITHUB_OUTPUT
+
       - name: Write pipeline vars summary
         run: |
-          echo "### Prepare pipeline:               
+          echo "### Prepare pipeline:
           <table>
             <tr>
               <td>💡 Project type</td>
-              <td>${{ steps.pipeline-vars.outputs.PROJECT_TYPE }}</td>
+              <td>${{ steps.project-type.outputs.PROJECT_TYPE }}</td>
             </tr>
             <tr>
               <td>🚀 Deployment platform</td>
-              <td>${{ steps.pipeline-vars.outputs.DEPLOY_PLATFORM }}</td>
+              <td>${{ steps.deploy-platform.outputs.DEPLOY_PLATFORM }}</td>
             </tr>
             <tr>
               <td>🎯 Deployment environment</td>
-              <td>${{ steps.pipeline-vars.outputs.DEPLOY_ENV }}</td>
+              <td>${{ steps.deploy-env.outputs.DEPLOY_ENV }}</td>
             </tr>
             <tr>
               <td>🐳 Image name</td>
-              <td>${{ steps.pipeline-vars.outputs.IMAGE_NAME }}</td>
+              <td>${{ steps.image-name.outputs.IMAGE_NAME }}</td>
+            </tr>
+            <tr>
+              <td>📦 Package version</td>
+              <td>${{ steps.package-version.outputs.PACKAGE_VERSION }}</td>
             </tr>
           </table>" >> $GITHUB_STEP_SUMMARY
-  
+
   prepare-env-vars:
     if: |
       needs.prepare-pipeline-vars.outputs.DEPLOY_ENV == 'prod' ||
       needs.prepare-pipeline-vars.outputs.DEPLOY_ENV == 'stag'
     runs-on: ubuntu-latest
-
     needs: prepare-pipeline-vars
 
     environment: ${{ needs.prepare-pipeline-vars.outputs.deploy_env }}
@@ -132,7 +164,7 @@ jobs:
           for var in "${required_variables[@]}"; do
             if [[ -z ${!var} ]]; then
               missing_variables+=($var)
-            else 
+            else
               echo "Variable \"$var\" is present"
             fi
           done
@@ -150,7 +182,6 @@ jobs:
       needs.prepare-pipeline-vars.outputs.DEPLOY_ENV == 'stag' &&
       needs.prepare-pipeline-vars.outputs.DEPLOY_PLATFORM == 'azure'
     runs-on: ubuntu-latest
-
     needs: prepare-pipeline-vars
 
     environment: ${{ needs.prepare-pipeline-vars.outputs.deploy_env }}
