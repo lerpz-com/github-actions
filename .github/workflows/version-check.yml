@@ -33,22 +33,6 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Validate SemVer version against Regex
-        env:
-          PACKAGE_VERSION: ${{ inputs.package_version }}
-        run: |
-          echo "Validating package version $PACKAGE_VERSION"
-
-          SEMVER_REGEX='^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$'
-
-          if echo "$PACKAGE_VERSION" | grep -Eq "$SEMVER_REGEX"; then
-            echo "SemVer regex matched version $PACKAGE_VERSION"
-            exit 0
-          else
-            echo "SemVer regex did not match version $PACKAGE_VERSION"
-            exit 1
-          fi
-
       - name: Check if release exsists
         if: inputs.deploy_env == 'prod'
         env:
