@@ -3,6 +3,12 @@ name: Validate the package version
 on:
   workflow_call:
     inputs:
+      validate_override:
+        description: Always validate the package version
+        required: false
+        type: boolean
+        default: false
+
       deploy_env:
         description: Deployment environment (prod, stag or dev)
         required: true
@@ -15,7 +21,10 @@ on:
 
 jobs:
   validate-version:
-    if: inputs.deploy_env == 'prod' || inputs.deploy_env == 'stag'
+    if: |
+      inputs.deploy_env == 'prod' ||
+      inputs.deploy_env == 'stag' ||
+      inputs.build_override
     runs-on: ubuntu-latest
 
     steps:

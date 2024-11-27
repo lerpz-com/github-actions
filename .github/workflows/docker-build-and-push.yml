@@ -3,6 +3,12 @@ name: Build and push docker image
 on:
   workflow_call:
     inputs:
+      build_override:
+        description: Always build and push the image
+        required: false
+        type: boolean
+        default: false
+
       deploy_env:
         description: The environment to deploy to
         required: true
@@ -25,7 +31,10 @@ on:
 
 jobs:
   build-and-push-image:
-    if: inputs.deploy_env == 'prod' || inputs.deploy_env == 'stag'
+    if: |
+      inputs.deploy_env == 'prod' ||
+      inputs.deploy_env == 'stag' ||
+      inputs.build_override
     runs-on: ubuntu-latest
 
     environment: ${{ inputs.deploy_env }}
@@ -35,7 +44,7 @@ jobs:
       packages: write
 
     outputs:
-      IMAGE_PATH: ${{ steps.docker-meta.outputs.tags }}
+      image_path: ${{ steps.docker-meta.outputs.tags }}
 
     steps:
       - name: Checkout repository
