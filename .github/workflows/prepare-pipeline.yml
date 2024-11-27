@@ -183,29 +183,3 @@ jobs:
             done
             exit 1
           fi
-
-  prepare-azure:
-    if: |
-      needs.prepare-pipeline-vars.outputs.DEPLOY_ENV == 'prod' ||
-      needs.prepare-pipeline-vars.outputs.DEPLOY_ENV == 'stag' &&
-      needs.prepare-pipeline-vars.outputs.DEPLOY_PLATFORM == 'azure'
-    runs-on: ubuntu-latest
-    needs: prepare-pipeline-vars
-
-    permissions:
-      id-token: write
-
-    steps:
-      - name: Validate login to Azure using OIDC
-        uses: azure/login@v2
-        with:
-          client-id: ${{ vars.AZURE_CLIENT_ID }}
-          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
-          tenant-id: ${{ vars.AZURE_TENANT_ID }}
-
-      - name: Azure CLI show account
-        uses: azure/cli@v2
-        with:
-          azcliversion: latest
-          inlineScript: |
-            az account show
