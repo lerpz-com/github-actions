@@ -9,10 +9,8 @@ on:
         type: string
 
 jobs:
-  lint-and-test:
+  lint:
     runs-on: ubuntu-latest
-    
-    environment: ${{ inputs.deploy_env }}
 
     steps:
       - name: Checkout repository
@@ -55,5 +53,21 @@ jobs:
             cargo clippy --all-targets --all-features
           fi
 
+  test:
+    needs: [lint]
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Rust environment
+        run: |
+          rustup update
+
       - name: Test Rust code
-        run: cargo test
+        run: cargo test --all-targets --all-features
