@@ -1,6 +1,6 @@
 # github-actions
 
-A repository to store generic GitHub actions workflows for lerpz-com.
+A repository to store generic GitHub action workflows for lerpz-com.
 
 ## Branches
 
