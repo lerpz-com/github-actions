@@ -108,6 +108,7 @@ jobs:
           fi
 
           PACKAGE_VERSION="$(cargo metadata --format-version=1 --no-deps | jq -r '.packages[0].version')$VERSION_SUFFIX"
+          PACKAGE_VERSION=$(echo $PACKAGE_VERSION) | tr -d ''
 
           echo "PACKAGE_VERSION=$PACKAGE_VERSION"
           echo "PACKAGE_VERSION=$PACKAGE_VERSION" >> $GITHUB_OUTPUT
