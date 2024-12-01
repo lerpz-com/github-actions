@@ -3,7 +3,7 @@ name: Validate the package version
 on:
   workflow_call:
     inputs:
-      validate_override:
+      build_override:
         description: Always validate the package version
         required: false
         type: boolean
