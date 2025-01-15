@@ -54,10 +54,20 @@ jobs:
         env:
           PACKAGE_VERSION: ${{ inputs.package_version }}
         run: |
-          if git rev-parse "refs/tags/$PACKAGE_VERSION" >/dev/null 2>&1; then
-              echo "Tag $PACKAGE_VERSION already exists."
+          CORE_PACKAGE_VERSION=$(echo $PACKAGE_VERSION | cut -d- -f1)
+
+          # Make sure this is the latest major.minotr.patch version.
+          if git rev-parse "refs/tags/$MMP_VERSION" >/dev/null 2>&1; then
+              echo "Tag $CORE_PACKAGE_VERSION already exist wihout metadata."
+              echo "Please bump the major, minor or patch part of the version."
               exit 1
-          else
-              echo "Tag $PACKAGE_VERSION does not exists."
-              exit 0
           fi
+
+          # Make sure full version is not already released.
+          if git rev-parse "refs/tags/$PACKAGE_VERSION" >/dev/null 2>&1; then
+              echo "Tag $PACKAGE_VERSION already exist."
+              echo "Please check the full version."
+              exit 1
+          fi
+
+          echo "Version $PACKAGE_VERSION is valid."
