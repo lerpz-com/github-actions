@@ -1,4 +1,5 @@
 name: Rust project linter and tester
+run-name: Lint and test Rust project for ${{ inputs.deploy_env }}
 
 on:
   workflow_call:

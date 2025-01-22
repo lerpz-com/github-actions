@@ -1,13 +1,9 @@
 name: Deploy container to Azure Container Instances
+run-name: Deploy Azure Container Instance to ${{ inputs.deploy_env }}
 
 on:
   workflow_call:
     inputs:
-      project_type:
-        description: The environment to deploy to
-        required: true
-        type: string
-
       deploy_env:
         description: The environment to deploy to
         required: true
@@ -20,11 +16,10 @@ on:
 
 jobs:
   deploy-aci:
-    if: ${{ inputs.project_type == 'ACI' }}
     runs-on: ubuntu-latest
-    
+
     environment: ${{ inputs.deploy_env }}
-    
+
     permissions:
       id-token: write
       contents: read
@@ -33,7 +28,7 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
-    
+
     - name: Log in to the container registry
       uses: docker/login-action@v3
       with:

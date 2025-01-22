@@ -1,4 +1,5 @@
 name: Plan and apply terraform code
+run-name: Plan and apply terraform for ${{ inputs.deploy_env }}
 
 on:
   workflow_call:

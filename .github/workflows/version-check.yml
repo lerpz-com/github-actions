@@ -1,4 +1,5 @@
 name: Validate the package version
+run-name: Validate package version ${{ inputs.package_version }}
 
 on:
   workflow_call:
