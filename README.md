@@ -1,6 +1,6 @@
 # github-actions
 
-A repository to store generic GitHub action workflows for this orginization.
+A repository to store generic GitHub action workflows for this organization.
 
 ## Branches
 
