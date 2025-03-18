@@ -87,4 +87,4 @@ jobs:
           IMAGE_PATH: ghcr.io/${{ inputs.image_name }}:latest
         run: |
           echo "### 🐳 Docker build:
-          Docker image: \`$DOCKER_IMAGE\`" >> $GITHUB_STEP_SUMMARY
+          Docker image: \`$IMAGE_PATH\`" >> $GITHUB_STEP_SUMMARY
