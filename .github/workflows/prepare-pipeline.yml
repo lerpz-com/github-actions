@@ -4,7 +4,12 @@ on:
   workflow_call:
     inputs:
       rust:
-        description: Rust features
+        description: Rust project features
+        default: false
+        type: boolean
+
+      node:
+        description: Node project features
         default: false
         type: boolean
 
@@ -22,8 +27,12 @@ on:
         value: ${{ jobs.prepare-pipeline-vars.outputs.image_name }}
 
       rust_package_version:
-        description: Package version of the crate
+        description: Package version of the rust crate
         value: ${{ jobs.prepare-pipeline-vars.outputs.rust_package_version }}
+      
+      node_package_version:
+        description: Package version of the node project
+        value: ${{ jobs.prepare-pipeline-vars.outputs.node_package_version }}
 
 jobs:
   prepare-pipeline-vars:
@@ -89,6 +98,24 @@ jobs:
             VERSION_SUFFIX="-$DEPLOY_ENV+$(git rev-parse --short HEAD)"
           fi
 
+          PACKAGE_VERSION="$(cat package.json | jq -r '.version')$VERSION_SUFFIX"
+          PACKAGE_VERSION=$(echo $PACKAGE_VERSION) | tr -d ''
+
+          echo "PACKAGE_VERSION=$PACKAGE_VERSION"
+          echo "PACKAGE_VERSION=$PACKAGE_VERSION" >> $GITHUB_OUTPUT
+        
+      - name: Get Node package version
+        if: ${{ inputs.node == true }}
+        id: node-package-version
+        env:
+          DEPLOY_ENV: ${{ steps.deploy-env.outputs.DEPLOY_ENV }}
+        run: |
+          echo "Checking package version..."
+
+          if [[ $DEPLOY_ENV != "prod" ]]; then
+            VERSION_SUFFIX="-$DEPLOY_ENV+$(git rev-parse --short HEAD)"
+          fi
+
           PACKAGE_VERSION="$(cargo metadata --format-version=1 --no-deps | jq -r '.packages[0].version')$VERSION_SUFFIX"
           PACKAGE_VERSION=$(echo $PACKAGE_VERSION) | tr -d ''
 
@@ -117,6 +144,14 @@ jobs:
               <tr>
                 <td>📦 Rust package version</td>
                 <td>${{ steps.rust-package-version.outputs.PACKAGE_VERSION }}</td>
+              </tr>"
+            fi
+
+            if [[ "${{ inputs.node }}" == "true" ]]; then
+              SUMMARY+="
+              <tr>
+                <td>📦 Rust package version</td>
+                <td>${{ steps.node-package-version.outputs.PACKAGE_VERSION }}</td>
               </tr>"
             fi
 
