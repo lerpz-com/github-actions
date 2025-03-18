@@ -125,7 +125,7 @@ jobs:
 
       - name: Write pipeline vars summary
         run: |
-          export SUMMARY "### Prepare pipeline:
+          export SUMMARY="### Prepare pipeline:
           <table>
             <tr>
               <td>🚀 Deployment platform</td>
