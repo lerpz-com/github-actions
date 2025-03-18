@@ -156,7 +156,7 @@ jobs:
               </tr>"
             fi
 
-          SUMMARY+=""
+          SUMMARY+="
           </table>"
           
           echo "$SUMMARY" >> $GITHUB_STEP_SUMMARY
