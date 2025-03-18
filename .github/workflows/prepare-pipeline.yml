@@ -43,6 +43,7 @@ jobs:
       deploy_env: ${{ steps.deploy-env.outputs.DEPLOY_ENV }}
       image_name: ${{ steps.image-name.outputs.IMAGE_NAME }}
       rust_package_version: ${{ steps.rust-package-version.outputs.PACKAGE_VERSION }}
+      node_package_version: ${{ steps.node-package-version.outputs.PACKAGE_VERSION }}
 
     steps:
       - name: Checkout repository
