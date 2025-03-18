@@ -151,7 +151,7 @@ jobs:
             if [[ "${{ inputs.node }}" == "true" ]]; then
               SUMMARY+="
               <tr>
-                <td>📦 Rust package version</td>
+                <td>📦 Node package version</td>
                 <td>${{ steps.node-package-version.outputs.PACKAGE_VERSION }}</td>
               </tr>"
             fi
