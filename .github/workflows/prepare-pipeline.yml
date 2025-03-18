@@ -99,7 +99,7 @@ jobs:
             VERSION_SUFFIX="-$DEPLOY_ENV+$(git rev-parse --short HEAD)"
           fi
 
-          PACKAGE_VERSION="$(cat package.json | jq -r '.version')$VERSION_SUFFIX"
+          PACKAGE_VERSION="$(cargo metadata --format-version=1 --no-deps | jq -r '.packages[0].version')$VERSION_SUFFIX"
           PACKAGE_VERSION=$(echo $PACKAGE_VERSION) | tr -d ''
 
           echo "PACKAGE_VERSION=$PACKAGE_VERSION"
@@ -117,7 +117,7 @@ jobs:
             VERSION_SUFFIX="-$DEPLOY_ENV+$(git rev-parse --short HEAD)"
           fi
 
-          PACKAGE_VERSION="$(cargo metadata --format-version=1 --no-deps | jq -r '.packages[0].version')$VERSION_SUFFIX"
+          PACKAGE_VERSION="$(cat package.json | jq -r '.version')$VERSION_SUFFIX"
           PACKAGE_VERSION=$(echo $PACKAGE_VERSION) | tr -d ''
 
           echo "PACKAGE_VERSION=$PACKAGE_VERSION"
