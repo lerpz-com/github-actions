@@ -7,11 +7,21 @@ on:
         description: Rust project features
         default: false
         type: boolean
+      
+      rust_package_root:
+        description: Path to the root of the Rust package
+        default: '.'
+        type: string
 
       node:
         description: Node project features
         default: false
         type: boolean
+      
+      node_package_root:
+        description: Path to the root of the Node package
+        default: '.'
+        type: string
 
     outputs:
       deploy_platform:
@@ -92,11 +102,20 @@ jobs:
         id: rust-package-version
         env:
           DEPLOY_ENV: ${{ steps.deploy-env.outputs.DEPLOY_ENV }}
+          RUST_PACKAGE_ROOT: ${{ inputs.rust_package_root }}
         run: |
           echo "Checking package version..."
 
           if [[ $DEPLOY_ENV != "prod" ]]; then
             VERSION_SUFFIX="-$DEPLOY_ENV+$(git rev-parse --short HEAD)"
+          fi
+
+          cd $RUST_PACKAGE_ROOT
+          if [[ -f Cargo.toml ]]; then
+            echo "Cargo.toml file found"
+          else
+            echo "Cargo.toml file not found"
+            exit 1
           fi
 
           PACKAGE_VERSION="$(cargo metadata --format-version=1 --no-deps | jq -r '.packages[0].version')$VERSION_SUFFIX"
@@ -110,11 +129,20 @@ jobs:
         id: node-package-version
         env:
           DEPLOY_ENV: ${{ steps.deploy-env.outputs.DEPLOY_ENV }}
+          NODE_PACKAGE_ROOT: ${{ inputs.node_package_root }}
         run: |
           echo "Checking package version..."
 
           if [[ $DEPLOY_ENV != "prod" ]]; then
             VERSION_SUFFIX="-$DEPLOY_ENV+$(git rev-parse --short HEAD)"
+          fi
+
+          cd $NODE_PACKAGE_ROOT
+          if [[ -f package.json ]]; then
+            echo "package.json file found"
+          else
+            echo "package.json file not found"
+            exit 1
           fi
 
           PACKAGE_VERSION="$(cat package.json | jq -r '.version')$VERSION_SUFFIX"
